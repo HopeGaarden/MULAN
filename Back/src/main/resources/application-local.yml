@@ -1,0 +1,29 @@
+
+# 로컬 모드 설정
+spring.config.activate.on-profile: local
+
+spring:
+  datasource:
+    driver-class-name:
+    url: ENC(9IIY9LBPJFV6BOY5jfcX9aKek2jvdfA5lWctKqaFXf4GDSNZEPxcTpA07mmvrJAMDTII8VgX3JMeKquIQ4nnwHYaQk0bujSKWS+LKUH/Q9Q=)
+    username: ENC(rjJifLgylgc53Jk9f9mXDw==)
+    password: ENC(fOupeFdXa7BJmO7kQog0rw==)
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        highlight_sql: true
+        query:
+          in_clause_parameter_padding: true
+
+logging:
+  level:
+    org:
+      hibernate:
+        orm:
+          jdbc:
+            bind: trace
