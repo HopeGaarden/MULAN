@@ -10,5 +10,3 @@ spring:
     name: Back
   profiles:
     active: local
-  config:
-    import: database.yml
