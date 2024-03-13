@@ -8,9 +8,9 @@
 # Mulan Team
 
 ### Backend
-|                             [이주성](https://github.com/jusung-c)                              |                [???](https://naver.com)                |                            [???](https://naver.com)                            |
+|                             [이주성](https://github.com/jusung-c)                              |                [이정원](https://github.com/ThisGrDn)                |                            [???](https://naver.com)                            |
 |:----------------------------------------------------------------------------------------:|:-------------------------------------------------------------------:|:----------------------------------------------------------------------------------------:|
-| <img src="https://cdn-icons-png.flaticon.com/512/4123/4123763.png" width=100 height=100> | 이미지 | 이미지 |
+| <img src="https://cdn-icons-png.flaticon.com/512/4123/4123763.png" width=100 height=100> |  <img src="https://github.com/HopeGaarden/MULAN/assets/103481014/6a6f197d-1b53-4f4c-98e3-d15eca5c9fdc" width=100 height=100> | 이미지 |
 
 # Project Architecture
 이미지
