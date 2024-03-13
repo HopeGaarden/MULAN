@@ -39,3 +39,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Q 클래스 ###
+**/src/main/generated/
