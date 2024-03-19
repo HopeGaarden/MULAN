@@ -1,5 +1,6 @@
 package com.example.back.domain.auth.member;
 
+import com.example.back.domain.BaseEntity;
 import com.example.back.domain.auth.member.constant.MemberRole;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Member {
+public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
