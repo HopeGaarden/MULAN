@@ -1,10 +1,6 @@
 server:
   port: 8080
 
-jasypt:
-  encryptor:
-    bean: jasyptEncryptor
-
 spring:
   application:
     name: Back

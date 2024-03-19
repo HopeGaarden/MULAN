@@ -5,9 +5,9 @@ spring.config.activate.on-profile: local
 spring:
   datasource:
     driver-class-name:
-    url: ENC(9IIY9LBPJFV6BOY5jfcX9aKek2jvdfA5lWctKqaFXf4GDSNZEPxcTpA07mmvrJAMDTII8VgX3JMeKquIQ4nnwHYaQk0bujSKWS+LKUH/Q9Q=)
-    username: ENC(rjJifLgylgc53Jk9f9mXDw==)
-    password: ENC(fOupeFdXa7BJmO7kQog0rw==)
+    url: jdbc:mysql://localhost:3307/hope-gaarden?serverTimezone=Asia/Seoul
+    username: jus
+    password: 1234
 
   jpa:
     hibernate:
