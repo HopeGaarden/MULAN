@@ -33,9 +33,6 @@ public class IntegrationHelper extends AbstractTestExecutionListener {
     private int port;
 
     @Autowired
-    private TestRestTemplate restTemplate;
-
-    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
