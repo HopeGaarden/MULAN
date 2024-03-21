@@ -43,5 +43,7 @@ jobs:
     steps:
     - name: Gradle 테스트
       run: |
+        ls
+        pwd
         cd ./Back
         ./gradlew test
