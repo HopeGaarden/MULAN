@@ -36,33 +36,29 @@ jobs:
       run: |
         cd ./Back
         ./gradlew clean build -x test
+  
+
+  deployment:
+    name: docker deployment
+    needs: build # depends on
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 도커 컴포즈 복사
+        run: echo "${{ secrets.DOCKER_COMPOSE_DEV }}" > ./Back/docker-compose.yml
+
+      - name: 도커 컴포즈 재실행
+        run: |
+          cd ./Back
+          docker-compose down
+          docker rmi `docker images | grep gitudy | awk '{print $3}'`
+          docker-compose up -d
 
   test:
-    # 실행 환경 (Git Runners 개인 서버)
+    needs: build # depends on
     runs-on: ubuntu-latest
+    
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'adopt'
-
-    # application.yml 파일 설정
-    - name: resources 폴더 생성
-      run: |
-        mkdir -p ./Back/src/main/resources
-
-    - name: yml 파일 생성
-      run: |
-        echo "${{ secrets.APPLICATION }}" > ./Back/src/main/resources/application.yml
-        echo "${{ secrets.APPLICATION_DEV }}" > ./Back/src/main/resources/application-dev.yml
-        echo "${{ secrets.DATABASE }}" > ./Back/src/main/resources/database.yml
-
-    # gradlew를 실행시키기 위해 권한 부여
-    - name: Gradlew에게 실행권한 부여
-      run: chmod +x ./Back/gradlew
-
     - name: Gradle 테스트
       run: |
         cd ./Back
@@ -70,5 +66,5 @@ jobs:
 
     - name: yaml 파일 변경
       run: |
-        echo "${{ secrets.APPLICATION_DEFAULT_DEV }}" > ./backend/src/main/resources/application.yml
+        echo "${{ secrets.APPLICATION_DEFAULT_DEV }}" > ./Back/src/main/resources/application.yml
 
