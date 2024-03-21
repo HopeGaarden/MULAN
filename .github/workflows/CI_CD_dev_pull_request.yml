@@ -50,6 +50,7 @@ jobs:
 
       - name: 도커 컴포즈 실행
         run: |
+          cd ./Back
           docker-compose up -d
 
   test:
