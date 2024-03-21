@@ -69,6 +69,7 @@ jobs:
       - name: 도커 컴포즈 실행
         run: |
           cd ./Back
+          docker-compose down
           docker-compose up -d
 
       - name: Gradle 테스트
