@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
@@ -32,6 +33,9 @@ public class IntegrationHelper extends AbstractTestExecutionListener {
     private int port;
 
     @Autowired
+    private TestRestTemplate restTemplate;
+
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
@@ -40,28 +44,26 @@ public class IntegrationHelper extends AbstractTestExecutionListener {
         RestAssured.port = this.port;
 
         // 테스트 환경인 H2 데이터베이스인지 확인
-        validateH2Database();
-
-        // public 테이블을 조회한 후 'TRUNCATE TABLE (TABLE_NAME);' 형식의 쿼리로 생성
-        List<String> truncateAllTablesQuery = jdbcTemplate.queryForList(
-                "SELECT CONCAT('TRUNCATE TABLE ', TABLE_NAME, ';') AS q " +
-                        "FROM INFORMATION_SCHEMA.TABLES " +
-                        "WHERE TABLE_SCHEMA = 'PUBLIC'"
-                , String.class);
+        validateMySQLDatabase();
 
         // 데이터베이스의 모든 테이블 초기화
-        truncateAllTables(truncateAllTablesQuery);
+        truncateAllTables();
     }
 
-    private void validateH2Database() {
-        // H2 데이터베이스 버전 정보 가져오기 -> 실패시 예외 발생해 테스트 실패
-        jdbcTemplate.queryForObject("SELECT H2VERSION() FROM DUAL", String.class);
+    private void validateMySQLDatabase() {
+        // MySQL 버전 정보 가져오기 -> 실패시 예외 발생해 테스트 실패
+        jdbcTemplate.queryForObject("SELECT VERSION()", String.class);
     }
 
-    private void truncateAllTables(List<String> truncateAllTablesQuery) {
-        // truncate를 쿼리 실행
-        for (String truncateQuery : truncateAllTablesQuery) {
-            jdbcTemplate.execute(truncateQuery);
+    private void truncateAllTables() {
+        // 테이블 목록 가져오기
+        List<String> tableNames = jdbcTemplate.queryForList(
+                "SELECT table_name FROM information_schema.tables " +
+                        "WHERE table_schema = DATABASE()", String.class);
+
+        // 테이블 초기화
+        for (String tableName : tableNames) {
+            jdbcTemplate.execute("TRUNCATE TABLE " + tableName);
         }
     }
 }
