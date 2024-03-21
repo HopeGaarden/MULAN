@@ -36,13 +36,11 @@ jobs:
       run: |
         cd ./Back
         ./gradlew clean build -x test
-  
 
-  deployment:
-    name: docker deployment
+  test:
     needs: build # depends on
     runs-on: ubuntu-latest
-
+    
     steps:
       - uses: actions/checkout@v3
       - name: 도커 컴포즈 파일 생성
@@ -53,18 +51,7 @@ jobs:
           cd ./Back
           docker-compose up -d
 
-  test:
-    needs: build # depends on
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v3
-    - name: Gradle 테스트
-      run: |
-        cd ./Back
-        ./gradlew test
-
-    - name: yaml 파일 변경
-      run: |
-        echo "${{ secrets.APPLICATION_DEFAULT_DEV }}" > ./Back/src/main/resources/application.yml
-
+      - name: Gradle 테스트
+        run: |
+          cd ./Back
+          ./gradlew test
