@@ -74,4 +74,4 @@ jobs:
       - name: Gradle 테스트
         run: |
           cd ./Back
-          ./gradlew test
+          ./gradlew clean test
