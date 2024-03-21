@@ -42,8 +42,11 @@ jobs:
     needs: build
     steps:
     - name: Gradle 테스트
+      working-directory: ./Back
       run: |
-        ls
-        pwd
-        cd ./Back
         ./gradlew test
+
+    - name: yaml 파일 변경
+      run: |
+        echo "${{ secrets.APPLICATION_DEFAULT_DEV }}" > ./backend/src/main/resources/application.yml
+
