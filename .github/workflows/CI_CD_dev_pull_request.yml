@@ -25,6 +25,7 @@ jobs:
       run: |
         echo "${{ secrets.APPLICATION }}" > ./Back/src/main/resources/application.yml
         echo "${{ secrets.APPLICATION_DEV }}" > ./Back/src/main/resources/application-dev.yml
+        echo "${{ secrets.APPLICATION_TEST }}" > ./Back/src/main/resources/application-test.yml
         echo "${{ secrets.DATABASE }}" > ./Back/src/main/resources/database.yml
 
     # gradlew를 실행시키기 위해 권한 부여
@@ -38,13 +39,33 @@ jobs:
         ./gradlew clean build -x test
 
   test:
-    needs: build # depends on
     runs-on: ubuntu-latest
     
     steps:
       - uses: actions/checkout@v3
-      - name: 도커 컴포즈 파일 생성
-        run: echo "${{ secrets.DOCKER_COMPOSE_DEV }}" > ./Back/docker-compose.yml
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      # application.yml 파일 설정
+      - name: resources 폴더 생성
+        run: |
+          mkdir -p ./Back/src/main/resources
+
+      - name: yml 파일 생성
+        run: |
+          echo "${{ secrets.APPLICATION }}" > ./Back/src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_DEV }}" > ./Back/src/main/resources/application-dev.yml
+          echo "${{ secrets.APPLICATION_TEST }}" > ./Back/src/main/resources/application-test.yml
+          echo "${{ secrets.DATABASE }}" > ./Back/src/main/resources/database.yml
+
+      # gradlew를 실행시키기 위해 권한 부여
+      - name: Gradlew에게 실행권한 부여
+        run: chmod +x ./Back/gradlew
+        - name: 도커 컴포즈 파일 생성
+          run: echo "${{ secrets.DOCKER_COMPOSE_DEV }}" > ./Back/docker-compose.yml
 
       - name: 도커 컴포즈 실행
         run: |
