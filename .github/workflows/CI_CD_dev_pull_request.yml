@@ -48,11 +48,9 @@ jobs:
       - name: 도커 컴포즈 파일 생성
         run: echo "${{ secrets.DOCKER_COMPOSE_DEV }}" > ./Back/docker-compose.yml
 
-      - name: 도커 컴포즈 재실행
+      - name: 도커 컴포즈 실행
         run: |
           cd ./Back
-          docker-compose down
-          docker rmi `docker images | grep gitudy | awk '{print $3}'`
           docker-compose up -d
 
   test:
