@@ -38,7 +38,6 @@ jobs:
         ./gradlew clean build -x test
 
   test:
-    needs: build # depends on
     runs-on: ubuntu-latest
     
     steps:
