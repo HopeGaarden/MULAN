@@ -42,7 +42,7 @@ jobs:
     needs: build
     steps:
     - name: Gradle 테스트
-      working-directory: ./Back
+      working-directory: Back
       run: |
         ./gradlew test
 
