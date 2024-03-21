@@ -41,7 +41,13 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-    - name: Gradle 테스트
-      run: |
-        cd ./Back
-        ./gradlew test
+      - uses: actions/checkout@v3
+      - name: 동일한 작업 공간 사용
+        uses: actions/checkout@v3
+        with:
+          path: ${{ github.workspace }}
+
+      - name: Gradle 테스트
+        run: |
+          cd ./Back
+          ./gradlew test
