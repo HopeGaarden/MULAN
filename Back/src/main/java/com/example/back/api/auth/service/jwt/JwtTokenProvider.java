@@ -48,7 +48,6 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-
     /*
         JWT 토큰 정보 추출
     */
@@ -102,7 +101,6 @@ public class JwtTokenProvider {
     public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
-
 
     // JWT 서명에 사용할 키 획득
     private Key getSignInKey() {
