@@ -30,11 +30,11 @@ jobs:
 
       # 도커 MySQL 실행
       - name: 도커 컴포즈 복사
-        run: echo "${{ secrets.DOCKER_COMPOSE }}" > ./backend/docker-compose.yml     
+        run: echo "${{ secrets.DOCKER_COMPOSE }}" > ./Back/docker-compose.yml     
 
       - name: 도커 컴포즈 재실행
         run: |
-          cd ./backend
+          cd ./Back
           docker-compose down
           docker rmi `docker images | grep hope | awk '{print $3}'`
           docker-compose up -d 
