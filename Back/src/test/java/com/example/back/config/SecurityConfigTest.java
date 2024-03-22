@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -124,4 +125,32 @@ class SecurityConfigTest extends IntegrationHelper {
                 .andDo(print());
     }
 
+    @Test
+    void 로그아웃한_사용자의_토큰은_더_이상_사용할_수_없다() throws Exception {
+        // given
+        String uri = "/auth/logout";
+
+        Member savedMember = memberRepository.save(MemberFixture.일반_유저_생성());
+        String jwtToken = jwtTokenProvider.generateToken(TokenUtil.createTokenMap(savedMember), savedMember);
+
+        tokenRepository.save(JwtToken.builder()
+                .token(jwtToken)
+                .email(savedMember.getEmail())
+                .tokenType(TokenType.BEARER)
+                .expired(false)
+                .revoked(false)
+                .build());
+
+        // when
+        mockMvc.perform(
+                        get(uri)
+                                .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isOk());
+
+
+        // then
+        JwtToken findToken = tokenRepository.findByToken(jwtToken).get();
+        assertTrue(findToken.isRevoked());
+        assertTrue(findToken.isExpired());
+    }
 }

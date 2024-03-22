@@ -18,6 +18,7 @@ public enum ExceptionMessage {
     JWT_SIGNATURE("JWT 토큰의 SIGNATURE가 올바르지 않습니다."),
     JWT_TOKEN_INVALID( "더 이상 사용할 수 없는 JWT 토큰입니다."),
     JWT_ILLEGAL_ARGUMENT("JWT 토큰의 구성 요소가 올바르지 않습니다."),
+    JWT_NOT_FOUND("요청의 헤더에서 JWT 토큰을 읽어올 수 없습니다."),
 
 
 
