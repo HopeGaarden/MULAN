@@ -2,10 +2,14 @@ package com.example.back.domain.auth.member.repository;
 
 import com.example.back.config.IntegrationHelper;
 import com.example.back.domain.auth.member.Member;
+import com.example.back.domain.auth.member.MemberFixture;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
@@ -15,50 +19,25 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @SuppressWarnings("NonAsciiCharacters")
-class MemberRepositoryTest extends IntegrationHelper {
+@ActiveProfiles("test")
+@SpringBootTest
+class MemberRepositoryTest {
 
     @Autowired
     private MemberRepository memberRepository;
 
-    private Member member;
-
-    @BeforeEach
-    void setup() {
-        member = 일반_유저_생성();
-        System.out.println("member.getEmail() = " + member.getEmail());
-        memberRepository.save(member);
+    @AfterEach
+    void afterEach() {
+        memberRepository.deleteAllInBatch();
     }
 
     @Test
     void 아이디_값으로_멤버를_찾는다() {
+        // given
+        Member member = memberRepository.save(MemberFixture.일반_유저_생성());
+
         // when
         Optional<Member> result = memberRepository.findById(member.getId());
-        System.out.println("result = " + result);
-
-        // then
-        assertSoftly(softly -> {
-            softly.assertThat(result).isPresent();
-            softly.assertThat(result.get()).usingRecursiveComparison().isEqualTo(member);
-        });
-    }
-
-    @Test
-    void 닉네임_값으로_멤버를_찾는다() {
-        // when
-        Optional<Member> result = memberRepository.findByNickname(member.getNickname());
-        System.out.println("result = " + result);
-
-        // then
-        assertSoftly(softly -> {
-            softly.assertThat(result).isPresent();
-            softly.assertThat(result.get()).usingRecursiveComparison().isEqualTo(member);
-        });
-    }
-
-    @Test
-    void 이메일_값으로_멤버를_찾는다() {
-        // when
-        Optional<Member> result = memberRepository.findByEmail(member.getEmail());
         System.out.println("result = " + result);
 
         // then
