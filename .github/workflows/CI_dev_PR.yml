@@ -44,4 +44,4 @@ jobs:
       - name: Test with Gradle
         run: |
           cd ./Back
-          ./gradlew test
+          ./gradlew test -i
