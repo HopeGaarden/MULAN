@@ -37,15 +37,15 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
 
-      # # application.yml 파일 설정
-      # - name: resources 폴더 생성
-      #   run: |
-      #     mkdir -p ./Back/src/main/resources
+      # application.yml 파일 설정
+      - name: resources 폴더 생성
+        run: |
+          mkdir -p ./Back/src/main/resources
 
-      # - name: yml 파일 생성
-      #   run: |
-      #     echo "${{ secrets.APPLICATION }}" > ./Back/src/main/resources/application.yml
-      #     echo "${{ secrets.DATABASE }}" > ./Back/src/main/resources/database.yml
+      - name: yml 파일 생성
+        run: |
+          echo "${{ secrets.APPLICATION }}" > ./Back/src/main/resources/application.yml
+          echo "${{ secrets.DATABASE }}" > ./Back/src/main/resources/database.yml
         
       - name: Grant execute permission for gradlew
         run: chmod +x ./Back/gradlew
