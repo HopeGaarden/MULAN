@@ -35,9 +35,7 @@ jobs:
       - name: 도커 컴포즈 재실행
         run: |
           cd ./Back
-          docker-compose down
-          docker rmi `docker images | grep hope | awk '{print $3}'`
-          docker-compose up -d 
+          docker-compose up
         
       - name: Gradlew에게 실행권한 부여
         run: chmod +x ./Back/gradlew
