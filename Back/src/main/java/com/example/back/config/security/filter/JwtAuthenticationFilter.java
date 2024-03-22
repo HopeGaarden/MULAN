@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("[BB INFO]: Jwt 인증 필터에 진입합니다");
+        log.info("[BR INFO]: Jwt 인증 필터에 진입합니다");
 
         // 헤더에서 JWT 토큰 추출
         final Optional<String> extractToken = AuthenticationExtractor.extractToken(request);
@@ -49,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // JWT 토큰이 BEARER 형식이 아니거나 존재하지 않는다면 다음 필터로
         if (extractToken.isEmpty()) {
-            log.info("[BB INFO]: Jwt 토큰이 헤더에 없으므로 다음 필터로 이동합니다");
+            log.info("[BR INFO]: Jwt 토큰이 헤더에 없으므로 다음 필터로 이동합니다");
 
             filterChain.doFilter(request, response);
             return;
@@ -63,7 +63,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // subject이 null인 경우 예외 발생
             if (subject == null) {
-                log.error("[BB ERROR]: {}", ExceptionMessage.JWT_SUBJECT_IS_NULL.getText());
+                log.error("[BR ERROR]: {}", ExceptionMessage.JWT_SUBJECT_IS_NULL.getText());
                 throw new TokenException(ExceptionMessage.JWT_SUBJECT_IS_NULL);
             }
 
@@ -91,7 +91,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         .getContext()
                         .setAuthentication(authToken);
 
-                log.info("[BB INFO]: Jwt 토큰이 성공적으로 인증되었습니다");
+                log.info("[BR INFO]: Jwt 토큰이 성공적으로 인증되었습니다");
 
                 // JWT 토큰 인증을 마치면 다음 인증 필터로 이동
                 filterChain.doFilter(request, response);
@@ -119,7 +119,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // 모든 JWT Exception을 처리하는 핸들러
     private void jwtExceptionHandler(HttpServletResponse response, ExceptionMessage message) throws IOException {
-        log.error("[BB ERROR]: {}", message.getText());
+        log.error("[BR ERROR]: {}", message.getText());
 
         response.setStatus(HttpStatus.OK.value());
         response.setCharacterEncoding("utf-8");

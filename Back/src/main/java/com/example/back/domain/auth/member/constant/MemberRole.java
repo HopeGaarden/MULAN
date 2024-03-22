@@ -24,7 +24,7 @@ public enum MemberRole {
                 .filter(value -> value.role.equalsIgnoreCase(role))
                 .findFirst()
                 .orElseThrow(() -> {
-                    log.error("[BB ERROR] {} : {}", ExceptionMessage.MEMBER_ROLE_NOT_FOUND.getText(), role);
+                    log.error("[BR ERROR] {} : {}", ExceptionMessage.MEMBER_ROLE_NOT_FOUND.getText(), role);
                     throw new MemberException(ExceptionMessage.MEMBER_ROLE_NOT_FOUND);
                 });
     }

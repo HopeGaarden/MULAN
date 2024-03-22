@@ -43,7 +43,7 @@ public class AuthConfig {
     public UserDetailsService userDetailsService() {
         return (username) -> memberRepository.findByEmail(username)
                 .orElseThrow(() -> {
-                    log.error("[BB ERROR]: {}", ExceptionMessage.MEMBER_ROLE_NOT_FOUND.getText());
+                    log.error("[BR ERROR]: {}", ExceptionMessage.MEMBER_ROLE_NOT_FOUND.getText());
                     throw new MemberException(ExceptionMessage.MEMBER_ROLE_NOT_FOUND);
                 });
     }
