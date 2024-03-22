@@ -25,6 +25,7 @@ class MemberRepositoryTest extends IntegrationHelper {
     @BeforeEach
     void setup() {
         member = 일반_유저_생성();
+        System.out.println("member.getEmail() = " + member.getEmail());
         memberRepository.save(member);
     }
 
@@ -32,6 +33,7 @@ class MemberRepositoryTest extends IntegrationHelper {
     void 아이디_값으로_멤버를_찾는다() {
         // when
         Optional<Member> result = memberRepository.findById(member.getId());
+        System.out.println("result = " + result);
 
         // then
         assertSoftly(softly -> {
@@ -44,6 +46,7 @@ class MemberRepositoryTest extends IntegrationHelper {
     void 닉네임_값으로_멤버를_찾는다() {
         // when
         Optional<Member> result = memberRepository.findByNickname(member.getNickname());
+        System.out.println("result = " + result);
 
         // then
         assertSoftly(softly -> {
@@ -56,6 +59,7 @@ class MemberRepositoryTest extends IntegrationHelper {
     void 이메일_값으로_멤버를_찾는다() {
         // when
         Optional<Member> result = memberRepository.findByEmail(member.getEmail());
+        System.out.println("result = " + result);
 
         // then
         assertSoftly(softly -> {
