@@ -38,7 +38,9 @@ jobs:
           mysql password: ${{ secrets.MYSQL_PASSWORD }}
         
       - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+        run: chmod +x ./Back/gradlew
         
       - name: Test with Gradle
-        run: ./gradlew --stacktrace --info test
+        run: |
+          cd ./Back
+          ./gradlew test
