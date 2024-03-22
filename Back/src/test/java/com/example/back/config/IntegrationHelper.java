@@ -18,6 +18,11 @@ import java.util.List;
     랜덤 포트를 사용해 내장 서버로 테스트 환경 실행
     - 여러 번 실행할 때 포트 충돌을 방지
  */
+
+/*
+    랜덤 포트를 사용해 내장 서버로 테스트 환경 실행
+    - 여러 번 실행할 때 포트 충돌을 방지
+ */
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 @ActiveProfiles("test")
@@ -39,23 +44,23 @@ public class IntegrationHelper extends AbstractTestExecutionListener {
         // 현재 실행된 포트 지정
         RestAssured.port = this.port;
 
-        // 테스트 환경인 H2 데이터베이스인지 확인
-        validateH2Database();
+        // 테스트 환경인 MySQL 데이터베이스인지 확인
+        validateMySQLDatabase();
 
         // public 테이블을 조회한 후 'TRUNCATE TABLE (TABLE_NAME);' 형식의 쿼리로 생성
         List<String> truncateAllTablesQuery = jdbcTemplate.queryForList(
                 "SELECT CONCAT('TRUNCATE TABLE ', TABLE_NAME, ';') AS q " +
                         "FROM INFORMATION_SCHEMA.TABLES " +
-                        "WHERE TABLE_SCHEMA = 'PUBLIC'"
+                        "WHERE TABLE_SCHEMA = (SELECT DATABASE())"
                 , String.class);
 
         // 데이터베이스의 모든 테이블 초기화
         truncateAllTables(truncateAllTablesQuery);
     }
 
-    private void validateH2Database() {
-        // H2 데이터베이스 버전 정보 가져오기 -> 실패시 예외 발생해 테스트 실패
-        jdbcTemplate.queryForObject("SELECT H2VERSION() FROM DUAL", String.class);
+    private void validateMySQLDatabase() {
+        // MySQL 데이터베이스 버전 정보 가져오기 -> 실패시 예외 발생해 테스트 실패
+        jdbcTemplate.queryForObject("SELECT VERSION() FROM DUAL", String.class);
     }
 
     private void truncateAllTables(List<String> truncateAllTablesQuery) {
