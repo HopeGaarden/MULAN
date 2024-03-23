@@ -5,7 +5,7 @@ import com.example.back.common.exception.ExceptionMessage;
 import com.example.back.common.exception.TokenException;
 import com.example.back.common.response.JsonResult;
 import com.example.back.common.utils.AuthenticationExtractor;
-import com.example.back.domain.token.jwt.repository.TokenRepository;
+import com.example.back.domain.token.jwt.repository.JwtTokenRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper objectMapper;
     private final UserDetailsService userDetailsService;
-    private final TokenRepository tokenRepository;
+    private final JwtTokenRepository jwtTokenRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -69,8 +69,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(subject);
 
-            boolean isTokenValid = tokenRepository.findByToken(jwtToken)
-                    .map(token -> !token.isExpired() && !token.isRevoked())
+            boolean isTokenValid = jwtTokenRepository.findById(jwtToken)
+                    .map(token -> !token.isExpired())
                     .orElse(false);
 
             // 토큰 유효성 검증

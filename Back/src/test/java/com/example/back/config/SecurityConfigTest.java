@@ -8,7 +8,7 @@ import com.example.back.domain.auth.member.Member;
 import com.example.back.domain.auth.member.repository.MemberRepository;
 import com.example.back.domain.token.jwt.JwtToken;
 import com.example.back.domain.token.jwt.constant.TokenType;
-import com.example.back.domain.token.jwt.repository.TokenRepository;
+import com.example.back.domain.token.jwt.repository.JwtTokenRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ class SecurityConfigTest extends IntegrationHelper {
     MemberRepository memberRepository;
 
     @Autowired
-    TokenRepository tokenRepository;
+    JwtTokenRepository jwtTokenRepository;
 
     @Test
     @DisplayName("인증되지 않은 사용자는 허용되지 않은 엔드포인트에 접근할 수 없다.")
@@ -74,12 +74,10 @@ class SecurityConfigTest extends IntegrationHelper {
         Member savedMember = memberRepository.save(MemberFixture.일반_유저_생성());
         String jwtToken = jwtTokenProvider.generateToken(TokenUtil.createTokenMap(savedMember), savedMember);
 
-        tokenRepository.save(JwtToken.builder()
+        jwtTokenRepository.save(JwtToken.builder()
                 .token(jwtToken)
                 .email(savedMember.getEmail())
-                .tokenType(TokenType.BEARER)
                 .expired(false)
-                .revoked(false)
                 .build());
 
         String refreshToken = jwtTokenProvider.generateRefreshToken(savedMember);
@@ -104,12 +102,10 @@ class SecurityConfigTest extends IntegrationHelper {
         Member savedMember = memberRepository.save(MemberFixture.일반_유저_생성());
         String jwtToken = jwtTokenProvider.generateToken(TokenUtil.createTokenMap(savedMember), savedMember);
 
-        tokenRepository.save(JwtToken.builder()
+        jwtTokenRepository.save(JwtToken.builder()
                 .token(jwtToken)
                 .email(savedMember.getEmail())
-                .tokenType(TokenType.BEARER)
                 .expired(true)
-                .revoked(true)
                 .build());
 
         String refreshToken = jwtTokenProvider.generateRefreshToken(savedMember);
@@ -133,12 +129,10 @@ class SecurityConfigTest extends IntegrationHelper {
         Member savedMember = memberRepository.save(MemberFixture.일반_유저_생성());
         String jwtToken = jwtTokenProvider.generateToken(TokenUtil.createTokenMap(savedMember), savedMember);
 
-        tokenRepository.save(JwtToken.builder()
+        jwtTokenRepository.save(JwtToken.builder()
                 .token(jwtToken)
                 .email(savedMember.getEmail())
-                .tokenType(TokenType.BEARER)
                 .expired(false)
-                .revoked(false)
                 .build());
 
         // when
@@ -149,8 +143,7 @@ class SecurityConfigTest extends IntegrationHelper {
 
 
         // then
-        JwtToken findToken = tokenRepository.findByToken(jwtToken).get();
-        assertTrue(findToken.isRevoked());
+        JwtToken findToken = jwtTokenRepository.findById(jwtToken).get();
         assertTrue(findToken.isExpired());
     }
 }

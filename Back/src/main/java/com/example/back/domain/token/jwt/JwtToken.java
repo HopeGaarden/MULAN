@@ -1,42 +1,35 @@
 package com.example.back.domain.token.jwt;
 
-import com.example.back.domain.BaseEntity;
-import com.example.back.domain.token.jwt.constant.TokenType;
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name="TOKEN")
-@Entity
-public class JwtToken extends BaseEntity {
+@ToString
+@NoArgsConstructor
+@RedisHash(value = "jwt", timeToLive = 60*60*24) // 1일
+public class JwtToken {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(length = 500)
     private String token;
 
-    @Enumerated(EnumType.STRING)
-    private TokenType tokenType;
-
+    @Indexed
     private boolean expired;
 
-    private boolean revoked;
-
+    @Indexed
     private String email;
 
     @Builder
-    public JwtToken(String token, TokenType tokenType, boolean expired, boolean revoked, String email) {
+    public JwtToken(String token, boolean expired, String email) {
         this.token = token;
-        this.tokenType = tokenType;
         this.expired = expired;
-        this.revoked = revoked;
         this.email = email;
     }
 
     public void setTokenInvalid() {
         this.expired = true;
-        this.revoked = true;
     }
 }

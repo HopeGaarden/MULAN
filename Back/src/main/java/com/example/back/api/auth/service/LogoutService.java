@@ -5,7 +5,7 @@ import com.example.back.common.exception.ExceptionMessage;
 import com.example.back.common.exception.TokenException;
 import com.example.back.common.utils.AuthenticationExtractor;
 import com.example.back.domain.token.jwt.JwtToken;
-import com.example.back.domain.token.jwt.repository.TokenRepository;
+import com.example.back.domain.token.jwt.repository.JwtTokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LogoutService implements LogoutHandler {
 
-    private final TokenRepository tokenRepository;
+    private final JwtTokenRepository jwtTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
@@ -40,11 +40,12 @@ public class LogoutService implements LogoutHandler {
 
     }
 
+    // 해당 사용자의 토큰들을 전부 비활성화
     private void revokeAllUserTokens(String userEmail) {
-        List<JwtToken> validTokens = tokenRepository.findAllValidTokenByUserId(userEmail);
+        List<JwtToken> validTokens = jwtTokenRepository.findByEmailAndExpiredIsFalse(userEmail);
         if (!validTokens.isEmpty()) {
             validTokens.forEach(JwtToken::setTokenInvalid);
-            tokenRepository.saveAll(validTokens);
+            jwtTokenRepository.saveAll(validTokens);
         }
     }
 
