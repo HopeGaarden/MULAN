@@ -1,4 +1,4 @@
-package com.example.back.api.auth.controller.login.response;
+package com.example.back.api.auth.controller.response;
 
 import lombok.Builder;
 

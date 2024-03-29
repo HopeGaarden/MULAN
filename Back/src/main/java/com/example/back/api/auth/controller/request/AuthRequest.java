@@ -1,4 +1,4 @@
-package com.example.back.api.auth.controller.login.request;
+package com.example.back.api.auth.controller.request;
 
 import com.example.back.common.validation.IsEmail;
 import jakarta.validation.constraints.NotBlank;

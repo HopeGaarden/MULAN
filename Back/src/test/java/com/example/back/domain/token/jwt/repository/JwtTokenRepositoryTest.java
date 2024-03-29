@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
@@ -78,10 +79,18 @@ class JwtTokenRepositoryTest {
 
         // when
         List<JwtToken> list = jwtTokenRepository.findByEmailAndExpiredIsFalse(email);
-        System.out.println("list.size() = " + list.size());
-        for (var t : list) {
-            System.out.println("t.getToken() = " + t.getToken());
-        }
+//        System.out.println("list.size() = " + list.size());
+//        for (var t : list) {
+//            System.out.println("t.getToken() = " + t.getToken());
+//        }
+
+        assertSoftly(softly -> {
+            softly.assertThat(list).hasSize(2);
+            softly.assertThat(list.get(0).getToken()).isEqualTo(tokenA.getToken());
+            softly.assertThat(list.get(1).getToken()).isEqualTo(tokenB.getToken());
+
+        });
+
     }
 
 }
