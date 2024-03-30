@@ -8,13 +8,14 @@ import com.example.back.domain.auth.member.Member;
 import com.example.back.domain.auth.member.repository.MemberRepository;
 import com.example.back.domain.token.jwt.JwtToken;
 import com.example.back.domain.token.jwt.constant.TokenType;
-import com.example.back.domain.token.jwt.repository.TokenRepository;
+import com.example.back.domain.token.jwt.repository.JwtTokenRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -32,7 +33,7 @@ class SecurityConfigTest extends IntegrationHelper {
     MemberRepository memberRepository;
 
     @Autowired
-    TokenRepository tokenRepository;
+    JwtTokenRepository jwtTokenRepository;
 
     @Test
     @DisplayName("인증되지 않은 사용자는 허용되지 않은 엔드포인트에 접근할 수 없다.")
@@ -73,12 +74,10 @@ class SecurityConfigTest extends IntegrationHelper {
         Member savedMember = memberRepository.save(MemberFixture.일반_유저_생성());
         String jwtToken = jwtTokenProvider.generateToken(TokenUtil.createTokenMap(savedMember), savedMember);
 
-        tokenRepository.save(JwtToken.builder()
+        jwtTokenRepository.save(JwtToken.builder()
                 .token(jwtToken)
                 .email(savedMember.getEmail())
-                .tokenType(TokenType.BEARER)
                 .expired(false)
-                .revoked(false)
                 .build());
 
         String refreshToken = jwtTokenProvider.generateRefreshToken(savedMember);
@@ -103,12 +102,10 @@ class SecurityConfigTest extends IntegrationHelper {
         Member savedMember = memberRepository.save(MemberFixture.일반_유저_생성());
         String jwtToken = jwtTokenProvider.generateToken(TokenUtil.createTokenMap(savedMember), savedMember);
 
-        tokenRepository.save(JwtToken.builder()
+        jwtTokenRepository.save(JwtToken.builder()
                 .token(jwtToken)
                 .email(savedMember.getEmail())
-                .tokenType(TokenType.BEARER)
                 .expired(true)
-                .revoked(true)
                 .build());
 
         String refreshToken = jwtTokenProvider.generateRefreshToken(savedMember);
@@ -124,4 +121,29 @@ class SecurityConfigTest extends IntegrationHelper {
                 .andDo(print());
     }
 
+    @Test
+    void 로그아웃한_사용자의_토큰은_더_이상_사용할_수_없다() throws Exception {
+        // given
+        String uri = "/auth/logout";
+
+        Member savedMember = memberRepository.save(MemberFixture.일반_유저_생성());
+        String jwtToken = jwtTokenProvider.generateToken(TokenUtil.createTokenMap(savedMember), savedMember);
+
+        jwtTokenRepository.save(JwtToken.builder()
+                .token(jwtToken)
+                .email(savedMember.getEmail())
+                .expired(false)
+                .build());
+
+        // when
+        mockMvc.perform(
+                        get(uri)
+                                .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isOk());
+
+
+        // then
+        JwtToken findToken = jwtTokenRepository.findById(jwtToken).get();
+        assertTrue(findToken.isExpired());
+    }
 }

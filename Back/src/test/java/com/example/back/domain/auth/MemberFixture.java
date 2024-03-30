@@ -7,7 +7,7 @@ public class MemberFixture {
 
     public static Member 일반_유저_생성() {
         return Member.builder()
-                .nickname("nickname")
+                .nickname("닉네임")
                 .password("password")
                 .email("email@naver.com")
                 .role(MemberRole.MEMBER)

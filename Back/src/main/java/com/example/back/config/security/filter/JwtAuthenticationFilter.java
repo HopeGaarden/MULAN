@@ -5,7 +5,7 @@ import com.example.back.common.exception.ExceptionMessage;
 import com.example.back.common.exception.TokenException;
 import com.example.back.common.response.JsonResult;
 import com.example.back.common.utils.AuthenticationExtractor;
-import com.example.back.domain.token.jwt.repository.TokenRepository;
+import com.example.back.domain.token.jwt.repository.JwtTokenRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.SignatureException;
@@ -36,11 +36,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper objectMapper;
     private final UserDetailsService userDetailsService;
-    private final TokenRepository tokenRepository;
+    private final JwtTokenRepository jwtTokenRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("[BB INFO]: Jwt 인증 필터에 진입합니다");
+        log.info("[BR INFO]: Jwt 인증 필터에 진입합니다");
 
         // 헤더에서 JWT 토큰 추출
         final Optional<String> extractToken = AuthenticationExtractor.extractToken(request);
@@ -49,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // JWT 토큰이 BEARER 형식이 아니거나 존재하지 않는다면 다음 필터로
         if (extractToken.isEmpty()) {
-            log.info("[BB INFO]: Jwt 토큰이 헤더에 없으므로 다음 필터로 이동합니다");
+            log.info("[BR INFO]: Jwt 토큰이 헤더에 없으므로 다음 필터로 이동합니다");
 
             filterChain.doFilter(request, response);
             return;
@@ -63,14 +63,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // subject이 null인 경우 예외 발생
             if (subject == null) {
-                log.error("[BB ERROR]: {}", ExceptionMessage.JWT_SUBJECT_IS_NULL.getText());
+                log.error("[BR ERROR]: {}", ExceptionMessage.JWT_SUBJECT_IS_NULL.getText());
                 throw new TokenException(ExceptionMessage.JWT_SUBJECT_IS_NULL);
             }
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(subject);
 
-            boolean isTokenValid = tokenRepository.findByToken(jwtToken)
-                    .map(token -> !token.isExpired() && !token.isRevoked())
+            boolean isTokenValid = jwtTokenRepository.findById(jwtToken)
+                    .map(token -> !token.isExpired())
                     .orElse(false);
 
             // 토큰 유효성 검증
@@ -91,7 +91,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         .getContext()
                         .setAuthentication(authToken);
 
-                log.info("[BB INFO]: Jwt 토큰이 성공적으로 인증되었습니다");
+                log.info("[BR INFO]: Jwt 토큰이 성공적으로 인증되었습니다");
 
                 // JWT 토큰 인증을 마치면 다음 인증 필터로 이동
                 filterChain.doFilter(request, response);
@@ -119,7 +119,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // 모든 JWT Exception을 처리하는 핸들러
     private void jwtExceptionHandler(HttpServletResponse response, ExceptionMessage message) throws IOException {
-        log.error("[BB ERROR]: {}", message.getText());
+        log.error("[BR ERROR]: {}", message.getText());
 
         response.setStatus(HttpStatus.OK.value());
         response.setCharacterEncoding("utf-8");
