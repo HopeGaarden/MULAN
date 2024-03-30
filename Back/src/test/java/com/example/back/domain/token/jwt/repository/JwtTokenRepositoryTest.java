@@ -1,8 +1,6 @@
 package com.example.back.domain.token.jwt.repository;
 
 import com.example.back.domain.token.jwt.JwtToken;
-import com.example.back.domain.token.refresh.RefreshToken;
-import com.example.back.domain.token.refresh.repository.RefreshTokenRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +12,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("test")
 @SpringBootTest

@@ -1,4 +1,4 @@
-package com.example.back.api.auth.service.login.response;
+package com.example.back.api.auth.service.response;
 
 import lombok.Builder;
 

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum ExceptionMessage {
     // MemberException
     MEMBER_ROLE_NOT_FOUND("회원의 권한 정보를 찾을 수 없습니다."),
+    MEMBER_NOT_FOUND("회원 정보를 찾을 수 없습니다."),
 
     // TokenException
     JWT_SUBJECT_IS_NULL("JWT 토큰의 식별자가 NULL입니다."),
