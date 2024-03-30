@@ -2,6 +2,7 @@ package com.example.back.api.auth.service.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,6 +29,18 @@ public class JwtTokenProvider {
     @Value("${jwt.refresh-token.expiration}")
     private long refreshExpiration;
 
+    private Key key;
+
+    // JWT 서명에 사용할 키 생성
+    @PostConstruct
+    protected void init() {
+        // Base64로 암호화(인코딩)되어 있는 secretKey를 바이트 배열로 복호화(디코딩)
+        byte[] keyBytes = Base64.getDecoder().decode(secret);
+
+        // JWT 서명을 위해 HMAC 알고리즘 적용
+        this.key = Keys.hmacShaKeyFor(keyBytes);
+    }
+
     /*
         Token 생성
     */
@@ -38,13 +51,14 @@ public class JwtTokenProvider {
     public String generateRefreshToken(UserDetails userDetails) {
         return buildToken(new HashMap<>(), userDetails, refreshExpiration);
     }
+
     private String buildToken(Map<String, String> extraClaims, UserDetails userDetails, long expiration) {
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -54,7 +68,7 @@ public class JwtTokenProvider {
     // 모든 Claim 추출
     public Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(getSignInKey())
+                .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -85,7 +99,6 @@ public class JwtTokenProvider {
 
         if (!claims.containsKey("role")) return false;
         if (!claims.containsKey("nickname")) return false;
-        if (!claims.containsKey("password")) return false;
 
         final String username = extractSubject(token);
 
@@ -100,15 +113,6 @@ public class JwtTokenProvider {
     // JWT 토큰이 만료되었는지 확인
     public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
-    }
-
-    // JWT 서명에 사용할 키 획득
-    private Key getSignInKey() {
-        // Base64로 암호화(인코딩)되어 있는 secretKey를 바이트 배열로 복호화(디코딩)
-        byte[] keyBytes = Base64.getDecoder().decode(secret);
-
-        // JWT 서명을 위해 HMAC 알고리즘 적용
-        return Keys.hmacShaKeyFor(keyBytes);
     }
 
 }

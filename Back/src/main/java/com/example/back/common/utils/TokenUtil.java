@@ -11,7 +11,6 @@ public class TokenUtil {
 
         map.put("role", String.valueOf(member.getRole()));
         map.put("nickname", String.valueOf(member.getNickname()));
-        map.put("password", String.valueOf(member.getPassword()));
 
         return map;
     }
