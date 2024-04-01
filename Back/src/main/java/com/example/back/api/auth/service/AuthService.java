@@ -5,6 +5,7 @@ import com.example.back.api.auth.service.jwt.JwtTokenProvider;
 import com.example.back.api.auth.service.response.AuthResponse;
 import com.example.back.common.exception.ExceptionMessage;
 import com.example.back.common.exception.MemberException;
+import com.example.back.common.exception.TokenException;
 import com.example.back.domain.auth.member.Member;
 import com.example.back.domain.auth.member.repository.MemberRepository;
 import com.example.back.domain.token.jwt.JwtToken;
@@ -53,12 +54,10 @@ public class AuthService {
         revokeAllUserTokens(member);
 
         // JWT 토큰 생성
-        String jwtToken = jwtTokenProvider.generateToken(setClaims(member), member);
-        saveJwtToken(member, jwtToken);
+        String jwtToken = generateAndSaveJwtToken(member);
 
         // refresh token 생성
-        String refreshToken = jwtTokenProvider.generateRefreshToken(member);
-        saveRefreshToken(member, refreshToken);
+        String refreshToken = generateAndSaveRefreshToken(member);
 
         return AuthResponse.builder()
                 .accessToken(jwtToken)
@@ -67,7 +66,11 @@ public class AuthService {
     }
 
     private void revokeAllUserTokens(Member member) {
-        List<JwtToken> validTokens = jwtTokenRepository.findByEmailAndExpiredIsFalse(member.getEmail());
+        // email에 해당하는 토큰 중 활성화되어 있는 토큰 리스트 조회
+        List<JwtToken> validTokens = jwtTokenRepository.findByEmail(member.getEmail()).stream()
+                .filter(token -> !token.isRevoked())
+                .toList();
+
         if (!validTokens.isEmpty()) {
             validTokens.forEach(JwtToken::setTokenInvalid);
             jwtTokenRepository.saveAll(validTokens);
@@ -81,23 +84,30 @@ public class AuthService {
         return claims;
     }
 
-    private void saveJwtToken(Member member, String jwtToken) {
+    private String generateAndSaveJwtToken(Member member) {
+        String jwtToken = jwtTokenProvider.generateToken(setClaims(member), member);
+
         JwtToken token = JwtToken.builder()
                 .token(jwtToken)
-                .expired(false)
+                .revoked(false)
                 .email(member.getEmail())
                 .build();
 
         jwtTokenRepository.save(token);
+        return jwtToken;
     }
 
-    private void saveRefreshToken(Member member, String refreshToken) {
+    private String generateAndSaveRefreshToken(Member member) {
+        String refreshToken = jwtTokenProvider.generateRefreshToken(member);
+
         RefreshToken token = RefreshToken.builder()
                 .refreshToken(refreshToken)
+                .revoked(false)
                 .email(member.getEmail())
                 .build();
 
         refreshTokenRepository.save(token);
+        return refreshToken;
     }
 
 }

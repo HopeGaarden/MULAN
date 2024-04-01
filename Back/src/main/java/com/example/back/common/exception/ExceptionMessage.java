@@ -11,7 +11,7 @@ public enum ExceptionMessage {
     MEMBER_ROLE_NOT_FOUND("회원의 권한 정보를 찾을 수 없습니다."),
     MEMBER_NOT_FOUND("회원 정보를 찾을 수 없습니다."),
 
-    // TokenException
+    // JwtTokenException
     JWT_SUBJECT_IS_NULL("JWT 토큰의 식별자가 NULL입니다."),
     JWT_TOKEN_EXPIRED("JWT 토큰이 만료되었습니다."),
     JWT_UNSUPPORTED("지원하지 않는 JWT 토큰입니다."),

@@ -7,7 +7,6 @@ import com.example.back.domain.auth.MemberFixture;
 import com.example.back.domain.auth.member.Member;
 import com.example.back.domain.auth.member.repository.MemberRepository;
 import com.example.back.domain.token.jwt.JwtToken;
-import com.example.back.domain.token.jwt.constant.TokenType;
 import com.example.back.domain.token.jwt.repository.JwtTokenRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -77,7 +76,7 @@ class SecurityConfigTest extends IntegrationHelper {
         jwtTokenRepository.save(JwtToken.builder()
                 .token(jwtToken)
                 .email(savedMember.getEmail())
-                .expired(false)
+                .revoked(false)
                 .build());
 
         String refreshToken = jwtTokenProvider.generateRefreshToken(savedMember);
@@ -105,7 +104,7 @@ class SecurityConfigTest extends IntegrationHelper {
         jwtTokenRepository.save(JwtToken.builder()
                 .token(jwtToken)
                 .email(savedMember.getEmail())
-                .expired(true)
+                .revoked(true)
                 .build());
 
         String refreshToken = jwtTokenProvider.generateRefreshToken(savedMember);
@@ -132,7 +131,7 @@ class SecurityConfigTest extends IntegrationHelper {
         jwtTokenRepository.save(JwtToken.builder()
                 .token(jwtToken)
                 .email(savedMember.getEmail())
-                .expired(false)
+                .revoked(false)
                 .build());
 
         // when
@@ -144,6 +143,6 @@ class SecurityConfigTest extends IntegrationHelper {
 
         // then
         JwtToken findToken = jwtTokenRepository.findById(jwtToken).get();
-        assertTrue(findToken.isExpired());
+        assertTrue(findToken.isRevoked());
     }
 }

@@ -15,21 +15,18 @@ import org.springframework.data.redis.core.index.Indexed;
 public class JwtToken {
     @Id
     private String token;
-
-    @Indexed
-    private boolean expired;
-
     @Indexed
     private String email;
+    private boolean revoked;
 
     @Builder
-    public JwtToken(String token, boolean expired, String email) {
+    public JwtToken(String token, boolean revoked, String email) {
         this.token = token;
-        this.expired = expired;
+        this.revoked = revoked;
         this.email = email;
     }
 
     public void setTokenInvalid() {
-        this.expired = true;
+        this.revoked = true;
     }
 }
