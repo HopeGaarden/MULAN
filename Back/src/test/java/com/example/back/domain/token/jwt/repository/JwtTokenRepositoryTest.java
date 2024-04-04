@@ -32,7 +32,7 @@ class JwtTokenRepositoryTest {
         // given
         JwtToken saveToken = jwtTokenRepository.save(JwtToken.builder()
                 .token("testToken")
-                .expired(false)
+                .revoked(false)
                 .email("email@naver.com")
                 .build());
 
@@ -48,7 +48,7 @@ class JwtTokenRepositoryTest {
         JwtToken expiredToken = jwtTokenRepository.save(jwtToken);
 
         // then
-        assertTrue(expiredToken.isExpired());
+        assertTrue(expiredToken.isRevoked());
     }
 
     @Test
@@ -59,28 +59,31 @@ class JwtTokenRepositoryTest {
 
         JwtToken tokenA = jwtTokenRepository.save(JwtToken.builder()
                 .token("tokenA")
-                .expired(false)
+                .revoked(false)
                 .email(email)
                 .build());
 
         JwtToken tokenB = jwtTokenRepository.save(JwtToken.builder()
                 .token("tokenB")
-                .expired(false)
+                .revoked(false)
                 .email(email)
                 .build());
 
         JwtToken tokenC = jwtTokenRepository.save(JwtToken.builder()
                 .token("tokenC")
-                .expired(true)
+                .revoked(true)
                 .email(email)
                 .build());
 
         // when
-        List<JwtToken> list = jwtTokenRepository.findByEmailAndExpiredIsFalse(email);
-//        System.out.println("list.size() = " + list.size());
-//        for (var t : list) {
-//            System.out.println("t.getToken() = " + t.getToken());
-//        }
+        List<JwtToken> list = jwtTokenRepository.findByEmail(email).stream()
+                .filter(token -> !token.isRevoked())
+                .toList();
+
+        System.out.println("list.size() = " + list.size());
+        for (var t : list) {
+            System.out.println("t.getToken() = " + t.getToken());
+        }
 
         assertSoftly(softly -> {
             softly.assertThat(list).hasSize(2);

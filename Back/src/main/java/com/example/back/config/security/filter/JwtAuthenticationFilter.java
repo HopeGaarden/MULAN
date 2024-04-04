@@ -69,8 +69,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(subject);
 
+            // 활성화 상태의 토큰인지 검증
             boolean isTokenValid = jwtTokenRepository.findById(jwtToken)
-                    .map(token -> !token.isExpired())
+                    .map(token -> !token.isRevoked())
                     .orElse(false);
 
             // 토큰 유효성 검증

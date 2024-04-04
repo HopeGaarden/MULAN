@@ -42,7 +42,11 @@ public class LogoutService implements LogoutHandler {
 
     // 해당 사용자의 토큰들을 전부 비활성화
     private void revokeAllUserTokens(String userEmail) {
-        List<JwtToken> validTokens = jwtTokenRepository.findByEmailAndExpiredIsFalse(userEmail);
+        // email에 해당하는 토큰 중 활성화되어 있는 토큰 리스트 조회
+        List<JwtToken> validTokens = jwtTokenRepository.findByEmail(userEmail).stream()
+                .filter(token -> !token.isRevoked())
+                .toList();
+
         if (!validTokens.isEmpty()) {
             validTokens.forEach(JwtToken::setTokenInvalid);
             jwtTokenRepository.saveAll(validTokens);
