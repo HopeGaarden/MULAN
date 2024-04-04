@@ -44,4 +44,26 @@ public class AuthController {
                         .accessToken(authResponse.accessToken())
                         .build());
     }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<LoginResponse> refreshToken(@CookieValue(name = "refreshToken") String refreshToken) {
+
+        AuthResponse authResponse = authService.refreshJwtToken(refreshToken);
+
+        // refresh token을 쿠키로 관리하기 위해 쿠키 생성
+        ResponseCookie refreshCookie = ResponseCookie
+                .from("refreshToken", authResponse.refreshToken())
+                .httpOnly(true)             // HTTP 전송 전용 쿠키
+                .secure(true)               // HTTPS 연결에서만 전송
+                .path("/")                  // 쿠키의 경로 설정 -> 모든 요청에서 쿠키를 사용할 수 있도록 "/"로 설정
+                .maxAge(604800)   // 쿠키의 유효 시간을 7일로 설정
+                .domain(domain)        // 쿠키의 도메인 설정 -> 로컬 호스트에서만 전송되도록
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body(LoginResponse.builder()
+                        .accessToken(authResponse.accessToken())
+                        .build());
+    }
 }

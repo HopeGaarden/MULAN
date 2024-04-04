@@ -102,12 +102,62 @@ public class AuthService {
 
         RefreshToken token = RefreshToken.builder()
                 .refreshToken(refreshToken)
-                .revoked(false)
                 .email(member.getEmail())
+                .isRevoked(false)
                 .build();
 
         refreshTokenRepository.save(token);
         return refreshToken;
     }
 
+    @Transactional
+    public AuthResponse refreshJwtToken(String refreshToken) {
+        if (refreshToken == null) {
+            log.error("[BR ERROR]: {}", ExceptionMessage.REFRESH_TOKEN_IS_NULL.getText());
+            throw new TokenException(ExceptionMessage.REFRESH_TOKEN_IS_NULL);
+        }
+
+        final String userEmail = jwtTokenProvider.extractSubject(refreshToken);
+
+        if (userEmail == null) {
+            log.error("[BR ERROR]: {}", ExceptionMessage.JWT_SUBJECT_IS_NULL.getText());
+            throw new TokenException(ExceptionMessage.JWT_SUBJECT_IS_NULL);
+        }
+
+        Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> {
+            log.error("[BR ERROR]: {}", ExceptionMessage.MEMBER_NOT_FOUND.getText());
+            throw new MemberException(ExceptionMessage.MEMBER_NOT_FOUND);
+        });
+
+        // 유효한 refreshToken인지 확인
+        if (jwtTokenProvider.isRefreshTokenValid(refreshToken, member) && isTokenValid(refreshToken)) {
+
+            // JWT 토큰 재발급
+            String newJwtToken = generateAndSaveJwtToken(member);
+
+            return AuthResponse.builder()
+                    .accessToken(newJwtToken)
+                    .refreshToken(refreshToken)
+                    .build();
+
+        } else {
+            log.error("[BR ERROR]: {}", ExceptionMessage.REFRESH_TOKEN_INVALID.getText());
+            throw new TokenException(ExceptionMessage.REFRESH_TOKEN_INVALID);
+        }
+
+    }
+
+    private boolean isTokenValid(String refreshToken) {
+        RefreshToken findToken = refreshTokenRepository.findById(refreshToken).orElseThrow(() -> {
+            log.error("[BR ERROR]: {}", ExceptionMessage.REFRESH_TOKEN_NOT_FOUND.getText());
+            throw new TokenException(ExceptionMessage.REFRESH_TOKEN_NOT_FOUND);
+        });
+
+        if (findToken.isRevoked()) {
+            log.error("[BR ERROR]: {}", ExceptionMessage.REFRESH_TOKEN_REVOKED.getText());
+            throw new TokenException(ExceptionMessage.REFRESH_TOKEN_REVOKED);
+        }
+
+        return true;
+    }
 }

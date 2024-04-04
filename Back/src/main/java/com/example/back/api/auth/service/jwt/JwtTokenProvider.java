@@ -53,11 +53,12 @@ public class JwtTokenProvider {
     }
 
     private String buildToken(Map<String, String> extraClaims, UserDetails userDetails, long expiration) {
+        long currentTime = System.currentTimeMillis();
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .setIssuedAt(new Date(currentTime))
+                .setExpiration(new Date(currentTime + expiration))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
