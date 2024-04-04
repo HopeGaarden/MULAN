@@ -9,6 +9,7 @@ import com.example.back.config.IntegrationHelper;
 import com.example.back.domain.auth.member.Member;
 import com.example.back.domain.auth.member.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,6 +24,7 @@ import static com.example.back.config.IntegrationHelper.NON_ASCII;
 import static com.example.back.domain.auth.MemberFixture.일반_유저_생성;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -81,6 +83,7 @@ class AuthControllerTest extends IntegrationHelper {
     void 잘못된_이메일_형식으로_로그인_요청시_실패해야_한다() throws Exception {
         // given
         String inValidEmail = "invalid email";
+        String expectedValue = "email: 잘못된 형식의 이메일입니다.";
 
         Member member = memberRepository.save(일반_유저_생성());
 
@@ -104,9 +107,34 @@ class AuthControllerTest extends IntegrationHelper {
                                 .build())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.res_code").value(400))
-                .andExpect(jsonPath("$.res_msg").value("email: 잘못된 형식의 이메일입니다."))
+                .andExpect(jsonPath("$.res_msg").value(expectedValue))
                 .andDo(print());
 
     }
+
+    @Test
+    void 리프레시_토큰으로_재발급_요청_성공_테스트() throws Exception {
+        // given
+        Member member = memberRepository.save(일반_유저_생성());
+
+        String refreshToken = jwtTokenProvider.generateRefreshToken(member);
+        String newAccessToken = jwtTokenProvider.generateToken(Map.of("email", member.getEmail()), member);
+
+        when(authService.refreshJwtToken(anyString()))
+                .thenReturn(AuthResponse.builder()
+                        .accessToken(newAccessToken)
+                        .refreshToken(refreshToken)
+                        .build());
+
+        // then
+        mockMvc.perform(post("/auth/refresh")
+                        .cookie(new Cookie("refreshToken", refreshToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.access_token").value(newAccessToken))
+                .andExpect(header().exists(HttpHeaders.SET_COOKIE)) // 쿠키가 잘 설정되었는지 확인
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("refreshToken=")))
+                .andDo(print());
+    }
+
 
 }
