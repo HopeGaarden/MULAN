@@ -1,7 +1,7 @@
 package com.example.back.domain.auth.member.constant;
 
-import com.example.back.common.exception.ExceptionMessage;
-import com.example.back.common.exception.MemberException;
+import com.example.back.global.exception.ExceptionMessage;
+import com.example.back.global.exception.MemberException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

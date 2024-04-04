@@ -1,7 +1,7 @@
 package com.example.back.config;
 
-import com.example.back.common.exception.ExceptionMessage;
-import com.example.back.common.exception.MemberException;
+import com.example.back.global.exception.ExceptionMessage;
+import com.example.back.global.exception.MemberException;
 import com.example.back.domain.auth.member.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;

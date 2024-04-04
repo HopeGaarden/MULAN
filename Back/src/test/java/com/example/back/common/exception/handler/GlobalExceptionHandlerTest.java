@@ -1,8 +1,9 @@
 package com.example.back.common.exception.handler;
 
-import com.example.back.common.exception.ExceptionMessage;
-import com.example.back.common.exception.MemberException;
+import com.example.back.global.exception.ExceptionMessage;
+import com.example.back.global.exception.MemberException;
 import com.example.back.common.response.JsonResult;
+import com.example.back.global.exception.handler.GlobalExceptionHandler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

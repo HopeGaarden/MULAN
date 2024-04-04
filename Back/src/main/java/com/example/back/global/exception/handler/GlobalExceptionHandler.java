@@ -1,4 +1,4 @@
-package com.example.back.common.exception.handler;
+package com.example.back.global.exception.handler;
 
 import com.example.back.common.response.JsonResult;
 import org.springframework.validation.BindException;

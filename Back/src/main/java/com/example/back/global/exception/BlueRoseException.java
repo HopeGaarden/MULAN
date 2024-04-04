@@ -1,4 +1,4 @@
-package com.example.back.common.exception;
+package com.example.back.global.exception;
 
 public abstract class BlueRoseException extends RuntimeException {
     public BlueRoseException(String message) {

@@ -1,8 +1,8 @@
 package com.example.back.config.security.filter;
 
 import com.example.back.api.auth.service.jwt.JwtTokenProvider;
-import com.example.back.common.exception.ExceptionMessage;
-import com.example.back.common.exception.TokenException;
+import com.example.back.global.exception.ExceptionMessage;
+import com.example.back.global.exception.TokenException;
 import com.example.back.common.response.JsonResult;
 import com.example.back.common.utils.AuthenticationExtractor;
 import com.example.back.domain.token.jwt.repository.JwtTokenRepository;
