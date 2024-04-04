@@ -29,6 +29,7 @@ class RefreshTokenRepositoryTest {
         RefreshToken saveToken = refreshTokenRepository.save(RefreshToken.builder()
                 .refreshToken("testToken")
                 .email("email@naver.com")
+                .isRevoked(false)
                 .build());
 
         // when

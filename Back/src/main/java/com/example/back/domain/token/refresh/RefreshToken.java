@@ -15,10 +15,17 @@ public class RefreshToken {
     @Id
     private String refreshToken;
     private String email;
+    private boolean isRevoked;
 
     @Builder
-    public RefreshToken(String refreshToken, String email) {
+    public RefreshToken(String refreshToken, String email, boolean isRevoked) {
         this.refreshToken = refreshToken;
         this.email = email;
+        this.isRevoked = isRevoked;
+    }
+
+    // 토큰 무효화
+    public void setTokenInvalid() {
+        this.isRevoked = true;
     }
 }
