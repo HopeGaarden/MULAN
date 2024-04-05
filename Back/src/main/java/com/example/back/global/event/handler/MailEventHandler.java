@@ -17,17 +17,17 @@ public class MailEventHandler {
 
     @Async
     @EventListener(RegisteredEvent.class)
-    public void sendMail(final RegisteredEvent event) {
+    public void sendMail(RegisteredEvent event) {
         log.info("[" + event.getMemberId() + "번 유저 (nickname : " + event.getNickname() + ") 생성 완료 : 회원가입 축하 메일 발송 완료");
 
         try {
             mailSender.pushMail(event.getEmail(), event.getMemberId(), event.getNickname());
-        } catch (final Exception exception) {
+        } catch (Exception exception) {
             handleErrors(event, exception);
         }
     }
 
-    private void handleErrors(final RegisteredEvent event, final Exception exception) {
+    private void handleErrors(RegisteredEvent event, Exception exception) {
         log.error("이메일 전송 실패 member : " + event.getMemberId() + " " + event.getEmail());
         log.error(exception.getMessage());
 
