@@ -25,6 +25,11 @@ public enum ExceptionMessage {
     REFRESH_TOKEN_NOT_FOUND("Refresh 토큰을 찾을 수 없습니다."),
     REFRESH_TOKEN_REVOKED("철회 상태의 Refresh 토큰입니다."),
 
+    // MailException
+    MAIL_SEND_MAX_RETRY_EXCEEDED("메일 재전송 최대 횟수를 초과하였습니다."),
+    MAIL_SEND_FAIL("알 수 없는 에러로 메일 전송에 실패하였습니다."),
+    MAIL_SEND_INTERRUPTED("매일 재전송 대기 중 인터럽트가 발생했습니다."),
+
 
     ;
     private final String text;
