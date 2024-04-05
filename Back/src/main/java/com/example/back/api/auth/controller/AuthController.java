@@ -1,6 +1,7 @@
 package com.example.back.api.auth.controller;
 
 import com.example.back.api.auth.controller.request.AuthRequest;
+import com.example.back.api.auth.controller.request.SignUpRequest;
 import com.example.back.api.auth.controller.response.LoginResponse;
 import com.example.back.api.auth.service.AuthService;
 import com.example.back.api.auth.service.jwt.JwtTokenProvider;
@@ -22,6 +23,13 @@ public class AuthController {
 
     @Value("${server.reactive.session.cookie.domain}")
     private String domain;
+
+    @PostMapping("/signup")
+    public ResponseEntity<String> requestSignup(@RequestBody @Valid SignUpRequest request) {
+        authService.signUp(request);
+
+        return ResponseEntity.ok("회원가입이 완료되었습니다.");
+    }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> authenticate(@RequestBody @Valid AuthRequest login) {
