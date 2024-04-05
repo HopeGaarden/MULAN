@@ -18,7 +18,7 @@ public class MailEventHandler {
     @Async
     @EventListener(RegisteredEvent.class)
     public void sendMail(final RegisteredEvent event) {
-        log.info("[" + event.getMemberId() + "번 유저 생성. 닉네임 : " + event.getNickname() + "] : 회원가입 축하 메일 발송 완료");
+        log.info("[" + event.getMemberId() + "번 유저 (nickname : " + event.getNickname() + ") 생성 완료 : 회원가입 축하 메일 발송 완료");
 
         try {
             mailSender.pushMail(event.getEmail(), event.getMemberId(), event.getNickname());

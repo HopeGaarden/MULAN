@@ -1,10 +1,15 @@
 package com.example.back.api.auth.service;
 
+import com.example.back.alarm.domain.auth.RegisteredEvent;
 import com.example.back.api.auth.controller.request.AuthRequest;
+import com.example.back.api.auth.controller.request.SignUpRequest;
 import com.example.back.api.auth.service.jwt.JwtTokenProvider;
 import com.example.back.api.auth.service.response.AuthResponse;
+import com.example.back.domain.auth.member.constant.MemberRole;
+import com.example.back.global.event.Events;
 import com.example.back.global.exception.ExceptionMessage;
 import com.example.back.global.exception.MemberException;
+import com.example.back.global.exception.SignUpException;
 import com.example.back.global.exception.TokenException;
 import com.example.back.domain.auth.member.Member;
 import com.example.back.domain.auth.member.repository.MemberRepository;
@@ -21,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Function;
 
 @Slf4j
 @Service
@@ -36,6 +42,7 @@ public class AuthService {
     private final JwtTokenRepository jwtTokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
+    // 로그인 로직
     @Transactional
     public AuthResponse authenticate(AuthRequest login) {
         Member member = memberRepository.findByEmail(login.email()).orElseThrow(() -> {
@@ -110,6 +117,7 @@ public class AuthService {
         return refreshToken;
     }
 
+    // 토큰 재발급 로직
     @Transactional
     public AuthResponse refreshJwtToken(String refreshToken) {
         if (refreshToken == null) {
@@ -160,4 +168,42 @@ public class AuthService {
 
         return true;
     }
+
+    // 회원가입 로직
+    @Transactional
+    public void signUp(SignUpRequest request) {
+        // 입력된 패스워드가 서로 일치하는지 확인
+        verifyCommand(request);
+
+        // 이메일 중복 확인
+        validateNonExistentEmail(request.email());
+
+        // 회원 등록
+        Member member = memberRepository.save(memberMapper.apply(request));
+
+        // 회원가입 축하 메일 발송
+        Events.raise(new RegisteredEvent(member.getId(), member.getEmail(), member.getNickname()));
+
+    }
+
+    private void validateNonExistentEmail(final String email) {
+        if (memberRepository.existsByEmail(email)) {
+            log.error("[BR ERROR] {} : {}", email, ExceptionMessage.MEMBER_EMAIL_ALREADY_EXIST.getText());
+            throw new MemberException(ExceptionMessage.MEMBER_EMAIL_ALREADY_EXIST);
+        }
+    }
+
+    private void verifyCommand(SignUpRequest request) {
+        if (!request.password().equals(request.passwordVerify())) {
+            log.error("[BR ERROR]: {}", ExceptionMessage.MEMBER_PASSWORD_DO_NOT_MATCH.getText());
+            throw new SignUpException(ExceptionMessage.MEMBER_PASSWORD_DO_NOT_MATCH);
+        }
+    }
+
+    Function<SignUpRequest, Member> memberMapper = request -> Member.builder()
+            .email(request.email())
+            .nickname(request.nickname())
+            .password(request.password())
+            .role(MemberRole.MEMBER)
+            .build();
 }

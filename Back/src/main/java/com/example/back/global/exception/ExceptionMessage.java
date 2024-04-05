@@ -10,6 +10,8 @@ public enum ExceptionMessage {
     // MemberException
     MEMBER_ROLE_NOT_FOUND("회원의 권한 정보를 찾을 수 없습니다."),
     MEMBER_NOT_FOUND("회원 정보를 찾을 수 없습니다."),
+    MEMBER_PASSWORD_DO_NOT_MATCH("입력된 비밀번호가 서로 일치하지 않습니다."),
+    MEMBER_EMAIL_ALREADY_EXIST("해당 이메일은 이미 존재하는 이메일입니다."),
 
     // JwtTokenException
     JWT_SUBJECT_IS_NULL("JWT 토큰의 식별자가 NULL입니다."),
