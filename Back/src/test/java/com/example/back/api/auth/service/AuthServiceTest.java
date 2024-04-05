@@ -28,6 +28,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.security.Key;
 import java.util.Base64;
@@ -62,6 +63,9 @@ class AuthServiceTest extends IntegrationHelper {
 
     @Autowired
     JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Value("${jwt.secret-key}")
     private String secret;
@@ -258,7 +262,7 @@ class AuthServiceTest extends IntegrationHelper {
         assertSoftly(softly -> {
             softly.assertThat(findMember).isNotNull();
             softly.assertThat(findMember.getEmail()).isEqualTo(request.email());
-            softly.assertThat(findMember.getPassword()).isEqualTo(request.password());
+            softly.assertThat(passwordEncoder.matches(request.password(), findMember.getPassword())).isTrue();
         });
     }
 

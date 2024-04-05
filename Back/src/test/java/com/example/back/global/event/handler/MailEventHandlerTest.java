@@ -4,6 +4,7 @@ import com.example.back.alarm.domain.auth.RegisteredEvent;
 import com.example.back.config.IntegrationHelper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
 
 import static com.example.back.config.IntegrationHelper.NON_ASCII;
@@ -15,7 +16,7 @@ class MailEventHandlerTest extends IntegrationHelper {
     @Autowired
     private ApplicationContext applicationContext;
 
-    @Autowired
+    @MockBean
     private MailEventHandler mailEventHandler;
 
     @Test

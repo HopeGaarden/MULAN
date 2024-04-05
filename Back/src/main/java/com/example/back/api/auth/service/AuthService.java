@@ -21,11 +21,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @Slf4j
@@ -41,6 +43,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenRepository jwtTokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // 로그인 로직
     @Transactional
@@ -178,8 +181,11 @@ public class AuthService {
         // 이메일 중복 확인
         validateNonExistentEmail(request.email());
 
+        // 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(request.password());
+
         // 회원 등록
-        Member member = memberRepository.save(memberMapper.apply(request));
+        Member member = memberRepository.save(memberMapper.apply(request, encodedPassword));
 
         // 회원가입 축하 메일 발송
         Events.raise(new RegisteredEvent(member.getId(), member.getEmail(), member.getNickname()));
@@ -200,10 +206,10 @@ public class AuthService {
         }
     }
 
-    Function<SignUpRequest, Member> memberMapper = request -> Member.builder()
+    BiFunction<SignUpRequest, String, Member> memberMapper = (request, encodedPassword) -> Member.builder()
             .email(request.email())
             .nickname(request.nickname())
-            .password(request.password())
+            .password(encodedPassword)
             .role(MemberRole.MEMBER)
             .build();
 }
