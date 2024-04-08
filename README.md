@@ -15,25 +15,6 @@
 
 <br>
 
-### 프로젝트 일정
-![006](https://github.com/HopeGaarden/BlueRose/assets/62228433/34be93e6-c437-44f3-af64-14f04f751bdd)
-
-
-<br>
-
-### 요구사항 명세서
-
-![001](https://github.com/HopeGaarden/BlueRose/assets/62228433/07f42d43-22c7-4ef1-9401-14beaf8d8cc9)
-![002](https://github.com/HopeGaarden/BlueRose/assets/62228433/e8426d22-48ba-40c6-8d62-3f34d35d4732)
-
-<br>
-<br>
-
-![003](https://github.com/HopeGaarden/BlueRose/assets/62228433/e334a2b2-32e8-4bbe-8435-5b53f40a65d0)
-![004](https://github.com/HopeGaarden/BlueRose/assets/62228433/fb7c132b-cde1-42d4-866b-ef8457aac844)
-
-<br>
-
 ### 기술 스택 선정
 <img width="340" alt="image" src="https://github.com/HopeGaarden/BlueRose/assets/62228433/2812150e-a9d4-49b1-8c6d-da452a2238ab">
 
