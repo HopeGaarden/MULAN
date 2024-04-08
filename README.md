@@ -16,8 +16,6 @@
 <br>
 
 ### 프로젝트 일정
-
-![005](https://github.com/HopeGaarden/BlueRose/assets/62228433/890ff345-3249-4961-bb9b-734474519010)
 ![006](https://github.com/HopeGaarden/BlueRose/assets/62228433/34be93e6-c437-44f3-af64-14f04f751bdd)
 
 
