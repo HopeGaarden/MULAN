@@ -1,4 +1,4 @@
-package com.example.back.common.exception;
+package com.example.back.global.exception;
 
 public class TokenException extends BlueRoseException {
 

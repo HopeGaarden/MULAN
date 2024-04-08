@@ -1,4 +1,4 @@
-package com.example.back.common.exception;
+package com.example.back.global.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +10,8 @@ public enum ExceptionMessage {
     // MemberException
     MEMBER_ROLE_NOT_FOUND("회원의 권한 정보를 찾을 수 없습니다."),
     MEMBER_NOT_FOUND("회원 정보를 찾을 수 없습니다."),
+    MEMBER_PASSWORD_DO_NOT_MATCH("입력된 비밀번호가 서로 일치하지 않습니다."),
+    MEMBER_EMAIL_ALREADY_EXIST("해당 이메일은 이미 존재하는 이메일입니다."),
 
     // JwtTokenException
     JWT_SUBJECT_IS_NULL("JWT 토큰의 식별자가 NULL입니다."),
@@ -24,6 +26,11 @@ public enum ExceptionMessage {
     REFRESH_TOKEN_INVALID("더 이상 사용할 수 없는 Refresh 토큰입니다."),
     REFRESH_TOKEN_NOT_FOUND("Refresh 토큰을 찾을 수 없습니다."),
     REFRESH_TOKEN_REVOKED("철회 상태의 Refresh 토큰입니다."),
+
+    // MailException
+    MAIL_SEND_MAX_RETRY_EXCEEDED("메일 재전송 최대 횟수를 초과하였습니다."),
+    MAIL_SEND_FAIL("알 수 없는 에러로 메일 전송에 실패하였습니다."),
+    MAIL_SEND_INTERRUPTED("매일 재전송 대기 중 인터럽트가 발생했습니다."),
 
 
     ;

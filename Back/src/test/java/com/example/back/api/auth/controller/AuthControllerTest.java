@@ -1,11 +1,13 @@
 package com.example.back.api.auth.controller;
 
 import com.example.back.api.auth.controller.request.AuthRequest;
+import com.example.back.api.auth.controller.request.SignUpRequest;
 import com.example.back.api.auth.service.AuthService;
 import com.example.back.api.auth.service.jwt.JwtTokenProvider;
 import com.example.back.api.auth.service.response.AuthResponse;
 import com.example.back.common.utils.TokenUtil;
 import com.example.back.config.IntegrationHelper;
+import com.example.back.domain.auth.MemberFixture;
 import com.example.back.domain.auth.member.Member;
 import com.example.back.domain.auth.member.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,6 +27,7 @@ import static com.example.back.domain.auth.MemberFixture.일반_유저_생성;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -136,5 +139,66 @@ class AuthControllerTest extends IntegrationHelper {
                 .andDo(print());
     }
 
+    @Test
+    void 회원가입_요청_성공_테스트() throws Exception {
+        // given
+        Member member = MemberFixture.일반_유저_생성();
+
+        SignUpRequest request = SignUpRequest.builder()
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .password(member.getPassword())
+                .passwordVerify(member.getPassword())
+                .build();
+
+        // when
+        doNothing().when(authService).signUp(any(SignUpRequest.class));
+
+        mockMvc.perform(post("/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    void 회원가입_요청_유효성_검증_실패_테스트_1() throws Exception {
+        // given
+        Member member = MemberFixture.일반_유저_생성();
+
+        SignUpRequest request = SignUpRequest.builder()
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .password("@@@@@@@@@@")
+                .passwordVerify(member.getPassword())
+                .build();
+
+        mockMvc.perform(post("/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res_msg").value("password: 비밀번호는 최소한 하나의 대문자, 소문자, 특수문자 및 숫자를 포함해야 합니다."))
+                .andDo(print());
+    }
+
+    @Test
+    void 회원가입_요청_유효성_검증_실패_테스트_2() throws Exception {
+        // given
+        Member member = MemberFixture.일반_유저_생성();
+
+        SignUpRequest request = SignUpRequest.builder()
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .password("Aa@1")
+                .passwordVerify(member.getPassword())
+                .build();
+
+        mockMvc.perform(post("/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.res_msg").value("password: 비밀번호는 8자 이상 20자 이하여야 합니다."))
+                .andDo(print());
+    }
 
 }

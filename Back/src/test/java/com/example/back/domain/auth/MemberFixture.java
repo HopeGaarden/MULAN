@@ -13,5 +13,14 @@ public class MemberFixture {
                 .role(MemberRole.MEMBER)
                 .build();
     }
+
+    public static Member 새로운_유저_생성() {
+        return Member.builder()
+                .nickname("닉네임")
+                .password("password")
+                .email("email@google.com")
+                .role(MemberRole.MEMBER)
+                .build();
+    }
 }
 

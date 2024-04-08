@@ -1,7 +1,7 @@
 package com.example.back.config;
 
 import com.example.back.api.auth.service.jwt.JwtTokenProvider;
-import com.example.back.common.exception.ExceptionMessage;
+import com.example.back.global.exception.ExceptionMessage;
 import com.example.back.common.utils.TokenUtil;
 import com.example.back.domain.auth.MemberFixture;
 import com.example.back.domain.auth.member.Member;

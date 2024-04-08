@@ -1,17 +1,20 @@
 package com.example.back.api.auth.service;
 
 import com.example.back.api.auth.controller.request.AuthRequest;
+import com.example.back.api.auth.controller.request.SignUpRequest;
 import com.example.back.api.auth.service.jwt.JwtTokenProvider;
 import com.example.back.api.auth.service.response.AuthResponse;
-import com.example.back.common.exception.ExceptionMessage;
-import com.example.back.common.exception.MemberException;
-import com.example.back.common.exception.TokenException;
 import com.example.back.config.IntegrationHelper;
+import com.example.back.domain.auth.MemberFixture;
 import com.example.back.domain.auth.member.Member;
 import com.example.back.domain.auth.member.repository.MemberRepository;
 import com.example.back.domain.token.jwt.repository.JwtTokenRepository;
 import com.example.back.domain.token.refresh.RefreshToken;
 import com.example.back.domain.token.refresh.repository.RefreshTokenRepository;
+import com.example.back.global.exception.ExceptionMessage;
+import com.example.back.global.exception.MemberException;
+import com.example.back.global.exception.SignUpException;
+import com.example.back.global.exception.TokenException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -22,16 +25,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.*;
 
 import static com.example.back.config.IntegrationHelper.NON_ASCII;
 import static com.example.back.domain.auth.MemberFixture.일반_유저_생성;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -56,6 +63,9 @@ class AuthServiceTest extends IntegrationHelper {
 
     @Autowired
     JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Value("${jwt.secret-key}")
     private String secret;
@@ -230,4 +240,115 @@ class AuthServiceTest extends IntegrationHelper {
         assertEquals(ExceptionMessage.REFRESH_TOKEN_REVOKED.getText(), exception.getMessage());
     }
 
+
+    @Test
+    void 회원가입_성공_테스트() {
+        // given
+        Member member = MemberFixture.새로운_유저_생성();
+
+        var request = SignUpRequest.builder()
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .password(member.getPassword())
+                .passwordVerify(member.getPassword())
+                .build();
+
+        // when
+        authService.signUp(request);
+
+        Member findMember = memberRepository.findByEmail(member.getEmail()).get();
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(findMember).isNotNull();
+            softly.assertThat(findMember.getEmail()).isEqualTo(request.email());
+            softly.assertThat(passwordEncoder.matches(request.password(), findMember.getPassword())).isTrue();
+        });
+    }
+
+    @Test
+    void 중복된_이메일로_회원가입_요청시_실패해야_한다() {
+        // given
+        var request = SignUpRequest.builder()
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .password(member.getPassword())
+                .passwordVerify(member.getPassword())
+                .build();
+
+        // when
+        var e = assertThrows(MemberException.class, () -> {
+            authService.signUp(request);
+        });
+
+        assertEquals(ExceptionMessage.MEMBER_EMAIL_ALREADY_EXIST.getText(), e.getMessage());
+
+    }
+
+    @Test
+    void 입력된_패스워드가_서로_일치하지_않으면_회원가입에_실패해야_한다() {
+        // given
+        Member member = MemberFixture.새로운_유저_생성();
+
+        var request = SignUpRequest.builder()
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .password(member.getPassword())
+                .passwordVerify(member.getPassword() + " ")
+                .build();
+
+        // when
+        var e = assertThrows(SignUpException.class, () -> {
+            authService.signUp(request);
+        });
+
+        assertEquals(ExceptionMessage.MEMBER_PASSWORD_DO_NOT_MATCH.getText(), e.getMessage());
+
+    }
+
+    @Test
+    void 동일_이메일로_동시에_회원가입_시도시_처리_검증() throws Exception {
+        // given
+        Member member = MemberFixture.새로운_유저_생성();
+
+        var requestA = SignUpRequest.builder()
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .password(member.getPassword())
+                .passwordVerify(member.getPassword())
+                .build();
+
+        var requestB = SignUpRequest.builder()
+                .email(member.getEmail())
+                .nickname("T" + member.getNickname())
+                .password(member.getPassword())
+                .passwordVerify(member.getPassword())
+                .build();
+
+        // when
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        Future<Boolean> future1 = executor.submit(createSignUpCallable(requestA));
+        Future<Boolean> future2 = executor.submit(createSignUpCallable(requestB));
+        executor.shutdown();
+        executor.awaitTermination(1, TimeUnit.MINUTES);
+
+        // then
+        boolean success1 = future1.get(); // 첫 번째 요청의 결과
+        boolean success2 = future2.get(); // 두 번째 요청의 결과
+
+        assertTrue((success1 || success2) && !(success1 && success2)
+                , "정확히 하나의 회원가입 요청만 성공해야 한다.");
+
+    }
+
+    private Callable<Boolean> createSignUpCallable(SignUpRequest request) {
+        return () -> {
+            try {
+                authService.signUp(request);
+                return true;
+            } catch (Exception e) {
+                return false; // 실패 시 false 반환
+            }
+        };
+    }
 }
