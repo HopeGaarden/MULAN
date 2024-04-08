@@ -4,8 +4,29 @@
 
 # Blue Rose
 
-<img src="https://github.com/HopeGaarden/MULAN/assets/62228433/e987da26-51bd-4e91-8cc5-7194f2b393af" alt="이미지" width="150" height="150">
+![블루로즈-4_3-발표자료-001](https://github.com/HopeGaarden/BlueRose/assets/62228433/2362c634-4c25-4166-8fde-38356b341f7c)
 
+<br>
+
+### 프로젝트 제안서
+
+![003](https://github.com/HopeGaarden/BlueRose/assets/62228433/e334a2b2-32e8-4bbe-8435-5b53f40a65d0)
+![004](https://github.com/HopeGaarden/BlueRose/assets/62228433/fb7c132b-cde1-42d4-866b-ef8457aac844)
+
+<br>
+
+### 프로젝트 일정
+
+![005](https://github.com/HopeGaarden/BlueRose/assets/62228433/890ff345-3249-4961-bb9b-734474519010)
+![006](https://github.com/HopeGaarden/BlueRose/assets/62228433/34be93e6-c437-44f3-af64-14f04f751bdd)
+
+
+<br>
+
+### 요구사항 명세서
+
+![001](https://github.com/HopeGaarden/BlueRose/assets/62228433/07f42d43-22c7-4ef1-9401-14beaf8d8cc9)
+![002](https://github.com/HopeGaarden/BlueRose/assets/62228433/e8426d22-48ba-40c6-8d62-3f34d35d4732)
 
 <br>
 <br>
