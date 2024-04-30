@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  vacation-db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "root1234"
+      MYSQL_DATABASE: "hope-gaarden"
+      MYSQL_USER: "jus"
+      MYSQL_PASSWORD: "1234"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./database/init/:/docker-entrypoint-initdb.d/
+      - ./database/datadir/:/var/lib/mysql
+    ports:
+      - 3307:3306

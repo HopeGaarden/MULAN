@@ -22,7 +22,6 @@ bin/
 .DS_Store
 
 ### IntelliJ IDEA ###
-*.yml
 .idea
 *.iws
 *.iml

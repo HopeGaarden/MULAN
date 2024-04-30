@@ -1,0 +1,122 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: Back
+  profiles:
+    active: local
+
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: false
+  thymeleaf:
+    cache: false
+    suffix: .html
+
+# JWT 설정 - openssl rand -hex 64로 키 생성
+jwt:
+  secret-key: 3e46db1c90098ae0dc37ea641d11f79f1f3f0f10e2624471e0c643f3696bd12662b6e6623b49440b74447f243c4340bdf9a2532ee557818fbd5258348879afec
+  expiration: 86400000 # 1 day
+  refresh-token:
+    expiration: 604800000 # 7 days
+
+---
+# 로컬 모드 설정
+spring.config.activate.on-profile: local
+
+spring:
+  datasource:
+    driver-class-name:
+    url: jdbc:mysql://localhost:3307/hope-gaarden?serverTimezone=Asia/Seoul
+    username: jus
+    password: 1234
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        highlight_sql: true
+        query:
+          in_clause_parameter_padding: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6380
+
+logging:
+  level:
+    org:
+      hibernate:
+        orm:
+          jdbc:
+            bind: trace
+server:
+  reactive:
+    session:
+      cookie:
+        domain: localhost
+
+mail:
+  host: smtp.gmail.com
+  port: 465
+  username: 32183520@dankook.ac.kr
+  password: czto btfk pycm mxmq
+  sender:
+    email: 32183520@dankook.ac.kr
+    name: BlueRose
+
+---
+# 테스트 모드 설정
+spring.config.activate.on-profile: test
+
+spring:
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/hope
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6380
+
+
+server:
+  reactive:
+    session:
+      cookie:
+        domain: localhost
+
+mail:
+  host: smtp.testtest.com
+  port: 465
+  username: test
+  password: test
+  sender:
+    email: test
+    name: test
+
+---
+# 프로덕션 모드 설정
+spring.config.activate.on-profile: prod
+
+server:
+  reactive:
+    session:
+      cookie:
+        domain:
