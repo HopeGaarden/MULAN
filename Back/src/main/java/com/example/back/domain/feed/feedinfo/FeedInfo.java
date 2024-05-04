@@ -1,4 +1,4 @@
-package com.example.back.domain.feed.feedInfo;
+package com.example.back.domain.feed.feedinfo;
 
 import com.example.back.domain.BaseEntity;
 import com.example.back.domain.auth.member.Member;
@@ -20,7 +20,7 @@ public class FeedInfo extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID", nullable = false)
-    private Member follower;                    // 팔로워
+    private Member member;                    // 작성자
 
     @Enumerated(EnumType.STRING)
     @Column(name = "FEED_CATEGORY", nullable = false)
@@ -32,21 +32,17 @@ public class FeedInfo extends BaseEntity {
     @Column(name = "IMAGES")
     private String images;                      // 이미지 URL 리스트
 
-    @Column(name = "VIEW_CNT")
-    private int viewCnt = 0;                    // 조회 수
-
     @Enumerated(EnumType.STRING)
     @Column(name = "FEED_STATUS", nullable = false)
     @ColumnDefault(value = "'PUBLIC'")
     private FeedStatus status;                  // 피드 상태
 
     @Builder
-    public FeedInfo(Member follower, FeedCategory category, String content, String images, int viewCnt, FeedStatus status) {
-        this.follower = follower;
+    public FeedInfo(Member member, FeedCategory category, String content, String images, FeedStatus status) {
+        this.member = member;
         this.category = category;
         this.content = content;
         this.images = images;
-        this.viewCnt = viewCnt;
         this.status = status;
     }
 }
