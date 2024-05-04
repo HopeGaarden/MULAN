@@ -49,12 +49,11 @@ public class DiseaseWikiController {
 //     위키 백과 수정
     @PatchMapping("/{wikiId}")
     public JsonResult<?> findWiki(@AuthenticationPrincipal Member member,
-                                  @PathVariable(name = "wikiId") Long wikiId,
                                   @Valid @RequestBody DiseaseWikiPatchRequest request) {
         // 해당 위키를 수정할 수 있는 사용자인지 권한 검증
         DiseaseMember diseaseMember = diseaseMemberService.isSpecificDiseaseMember(member, request.DiseaseWikiId());
 
-        diseaseWikiService.patchWiki(wikiId, diseaseMember, request);
+        diseaseWikiService.patchWiki(diseaseMember, request);
 
         return JsonResult.successOf("위키 수정에 성공하였습니다.");
     }

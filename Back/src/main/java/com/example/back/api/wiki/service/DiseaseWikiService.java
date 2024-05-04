@@ -58,9 +58,9 @@ public class DiseaseWikiService {
     }
 
     @Transactional
-    public void patchWiki(Long wikiId, DiseaseMember diseaseMember, DiseaseWikiPatchRequest request) {
-        DiseaseWiki wiki = diseaseWikiRepository.findById(wikiId).orElseThrow(() -> {
-            log.error("[BR ERROR] {} : {}", wikiId, ExceptionMessage.WIKI_NOT_FOUND.getText());
+    public void patchWiki(DiseaseMember diseaseMember, DiseaseWikiPatchRequest request) {
+        DiseaseWiki wiki = diseaseWikiRepository.findById(request.DiseaseWikiId()).orElseThrow(() -> {
+            log.error("[BR ERROR] {} : {}", request.DiseaseWikiId(), ExceptionMessage.WIKI_NOT_FOUND.getText());
             throw new DiseaseWikiException(ExceptionMessage.WIKI_NOT_FOUND);
         });
 
