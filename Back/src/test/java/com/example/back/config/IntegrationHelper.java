@@ -42,6 +42,10 @@ public class IntegrationHelper extends AbstractTestExecutionListener {
         // 테스트 환경인 H2 데이터베이스인지 확인
         validateH2Database();
 
+        // 외래키 제약 조건 해제
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY FALSE"); // H2의 모든 외래 키 제약 조건 해제
+
+
         // public 테이블을 조회한 후 'TRUNCATE TABLE (TABLE_NAME);' 형식의 쿼리로 생성
         List<String> truncateAllTablesQuery = jdbcTemplate.queryForList(
                 "SELECT CONCAT('TRUNCATE TABLE ', TABLE_NAME, ';') AS q " +
@@ -51,6 +55,10 @@ public class IntegrationHelper extends AbstractTestExecutionListener {
 
         // 데이터베이스의 모든 테이블 초기화
         truncateAllTables(truncateAllTablesQuery);
+
+        // 외래키 제약 조건 재설정
+        jdbcTemplate.execute("SET REFERENTIAL_INTEGRITY TRUE"); // H2의 모든 외래 키 제약 조건 재설정
+
     }
 
     private void validateH2Database() {

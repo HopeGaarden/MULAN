@@ -212,4 +212,12 @@ public class AuthService {
             .password(encodedPassword)
             .role(MemberRole.MEMBER)
             .build();
+
+    // 플랫폼에 가입된 사용자인지 확인
+    public Member isMember(Member contextMember) {
+        return memberRepository.findByEmail(contextMember.getEmail()).orElseThrow(() -> {
+            log.error("[BR ERROR]: {}", ExceptionMessage.MEMBER_NOT_FOUND.getText());
+            throw new MemberException(ExceptionMessage.MEMBER_NOT_FOUND);
+        });
+    }
 }

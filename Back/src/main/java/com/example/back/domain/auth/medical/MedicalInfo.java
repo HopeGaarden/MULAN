@@ -23,9 +23,8 @@ public class MedicalInfo extends BaseEntity {
     @JoinColumn(name = "MEMBER_ID", nullable = false)
     private Member member;                      // 진단서 주인 정보
 
-    @Embedded
-    @Column(name = "DISEASE_INFO")
-    private DiseaseInfo diseaseInfo;            // 질병 정보
+    @Column(name = "DISEASE_INFO_ID")
+    private Long diseaseInfoId;            // 질병 정보 아이디
 
     @Column(name = "HOSPITAL_INFO")
     private String hospitalInfo;                // 병원 정보(이름)
@@ -42,9 +41,9 @@ public class MedicalInfo extends BaseEntity {
     private String confirmationDate;            // 진단서 확인 날짜
 
     @Builder
-    public MedicalInfo(Member member, DiseaseInfo diseaseInfo, String hospitalInfo, VerifyStatus status, String registrationID, String confirmationDate) {
+    public MedicalInfo(Member member, Long diseaseInfoId, String hospitalInfo, VerifyStatus status, String registrationID, String confirmationDate) {
         this.member = member;
-        this.diseaseInfo = diseaseInfo;
+        this.diseaseInfoId = diseaseInfoId;
         this.hospitalInfo = hospitalInfo;
         this.status = status;
         this.registrationID = registrationID;

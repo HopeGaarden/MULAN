@@ -2,7 +2,6 @@ package com.example.back.global.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
@@ -31,6 +30,20 @@ public enum ExceptionMessage {
     MAIL_SEND_MAX_RETRY_EXCEEDED("메일 재전송 최대 횟수를 초과하였습니다."),
     MAIL_SEND_FAIL("알 수 없는 에러로 메일 전송에 실패하였습니다."),
     MAIL_SEND_INTERRUPTED("매일 재전송 대기 중 인터럽트가 발생했습니다."),
+
+    // WikiException
+    WIKI_LIKE_COUNT_NEGATIVE_NUMBER("좋아요 수는 음수가 될 수 없습니다."),
+    WIKI_NOT_FOUND("해당하는 Wiki 백과를 찾을 수 없습니다."),
+    WIKI_ALREADY_EXIST("해당 그룹의 위키 백과는 이미 존재합니다."),
+
+    // DiseaseInfoException
+    DISEASE_NOT_FOUND("해당 그룹을 찾을 수 없습니다."),
+
+
+    // DiseaseMemberException
+    DISEASE_MEMBER_NOT_FOUND("해당 그룹의 명단에 존재하지 않습니다."),
+
+
 
 
     ;
