@@ -1,4 +1,4 @@
-package com.example.back.domain.feed.feedInfo;
+package com.example.back.domain.feed.feedinfo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

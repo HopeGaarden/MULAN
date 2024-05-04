@@ -32,6 +32,18 @@ public enum ExceptionMessage {
     MAIL_SEND_FAIL("알 수 없는 에러로 메일 전송에 실패하였습니다."),
     MAIL_SEND_INTERRUPTED("매일 재전송 대기 중 인터럽트가 발생했습니다."),
 
+    // FeedInfoException
+    FEEDINFO_NOT_FOUND("피드 정보를 찾을 수 없습니다. "),
+
+    // TagInfoException
+    TAGINFO_NOT_FOUND("태그 정보를 찾을 수 없습니다. "),
+
+    // CommentException
+    COMMENT_NOT_FOUND("댓글 정보를 찾을 수 없습니다. "),
+
+    // LikeException
+    Like_NOT_FOUND("좋아요 정보를 찾을 수 없습니다. "),
+
 
     ;
     private final String text;
