@@ -17,8 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.example.back.domain.auth.MemberFixture.새로운_유저_생성;
 import static com.example.back.domain.auth.MemberFixture.일반_유저_생성;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DiseaseMemberServiceTest extends IntegrationHelper {
     @Autowired
@@ -66,7 +66,6 @@ class DiseaseMemberServiceTest extends IntegrationHelper {
         diseaseMemberService.isSpecificDiseaseMember(member, disease.getId());
     }
 
-
     @Test
     void 특정_질병에_해당하는_사용자가_아닐_경우_실패_테스트() {
         var e = assertThrows(DiseaseMemberException.class, () -> {
@@ -76,5 +75,4 @@ class DiseaseMemberServiceTest extends IntegrationHelper {
         assertEquals(e.getMessage(), ExceptionMessage.DISEASE_MEMBER_NOT_FOUND.getText());
 
     }
-
 }

@@ -15,7 +15,7 @@ public class DiseaseWiki {
     private Long id;
 
     @Column(name = "DISEASE_INFO_ID", nullable = false)
-    private Long diseaseInfoId;            // 질병 정보 아이디
+    private Long diseaseInfoId;                // 질병 정보 아이디
 
     @Lob
     @Column(name = "CONTENT", nullable = false)
@@ -23,6 +23,9 @@ public class DiseaseWiki {
 
     @Column(name = "AUTHOR", nullable = false)
     private Long authorId;                    // 마지막 수정자
+
+    @Version
+    private int version;
 
     @Builder
     public DiseaseWiki(Long diseaseInfoId, String content, Long authorId) {
