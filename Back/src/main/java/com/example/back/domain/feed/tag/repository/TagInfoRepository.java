@@ -1,6 +1,5 @@
 package com.example.back.domain.feed.tag.repository;
 
-import com.example.back.domain.feed.feedinfo.FeedInfo;
 import com.example.back.domain.feed.tag.TagInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 

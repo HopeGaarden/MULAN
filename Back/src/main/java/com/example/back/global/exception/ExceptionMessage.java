@@ -42,7 +42,10 @@ public enum ExceptionMessage {
     COMMENT_NOT_FOUND("댓글 정보를 찾을 수 없습니다. "),
 
     // LikeException
-    Like_NOT_FOUND("좋아요 정보를 찾을 수 없습니다. "),
+    LIKE_NOT_FOUND("좋아요 정보를 찾을 수 없습니다. "),
+
+    // BookmarkException
+    BOOKMARK_NOT_FOUND("좋아요 정보를 찾을 수 없습니다. "),
 
 
     ;

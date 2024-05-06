@@ -1,7 +1,5 @@
 package com.example.back.api.feed.controller;
 
-import com.example.back.api.auth.controller.response.LoginResponse;
-import com.example.back.api.auth.service.AuthService;
 import com.example.back.api.feed.controller.request.FeedInfoRequest;
 import com.example.back.api.feed.controller.request.FeedInfoSliceRequest;
 import com.example.back.api.feed.controller.request.FeedInfoUpdateRequest;
@@ -12,7 +10,6 @@ import com.example.back.domain.auth.member.Member;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +22,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FeedInfoController {
     private final FeedInfoService feedInfoService;
-    private final AuthService authService;
 
     @PostMapping()
     public ResponseEntity<String> createFeedInfo(@AuthenticationPrincipal Member member,
