@@ -2,7 +2,7 @@ package com.example.back.domain.feed.like;
 
 import com.example.back.domain.BaseEntity;
 import com.example.back.domain.auth.member.Member;
-import com.example.back.domain.feed.feedInfo.FeedInfo;
+import com.example.back.domain.feed.feedinfo.FeedInfo;
 import jakarta.persistence.*;
 import lombok.*;
 

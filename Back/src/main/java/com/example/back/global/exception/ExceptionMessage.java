@@ -37,6 +37,9 @@ public enum ExceptionMessage {
     WIKI_ALREADY_EXIST("해당 그룹의 위키 백과는 이미 존재합니다."),
     WIKI_CONCURRENCY_CONFLICT("해당 위키를 수정하는 과정에서 충돌이 발생했습니다."),
     WIKI_DIFF_EXCEPTION("충돌을 확인하기 위해 비교하던 중 예외가 발생했습니다."),
+    
+    // FeedInfoException
+    FEEDINFO_NOT_FOUND("피드 정보를 찾을 수 없습니다. "),
 
     // DiseaseInfoException
     DISEASE_NOT_FOUND("해당 그룹을 찾을 수 없습니다."),
@@ -44,7 +47,17 @@ public enum ExceptionMessage {
     // DiseaseMemberException
     DISEASE_MEMBER_NOT_FOUND("해당 그룹의 명단에 존재하지 않습니다."),
 
+    // TagInfoException
+    TAGINFO_NOT_FOUND("태그 정보를 찾을 수 없습니다. "),
 
+    // CommentException
+    COMMENT_NOT_FOUND("댓글 정보를 찾을 수 없습니다. "),
+
+    // LikeException
+    LIKE_NOT_FOUND("좋아요 정보를 찾을 수 없습니다. "),
+
+    // BookmarkException
+    BOOKMARK_NOT_FOUND("좋아요 정보를 찾을 수 없습니다. "),
 
 
     ;
