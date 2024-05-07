@@ -35,10 +35,11 @@ public enum ExceptionMessage {
     WIKI_LIKE_COUNT_NEGATIVE_NUMBER("좋아요 수는 음수가 될 수 없습니다."),
     WIKI_NOT_FOUND("해당하는 Wiki 백과를 찾을 수 없습니다."),
     WIKI_ALREADY_EXIST("해당 그룹의 위키 백과는 이미 존재합니다."),
+    WIKI_CONCURRENCY_CONFLICT("해당 위키를 수정하는 과정에서 충돌이 발생했습니다."),
+    WIKI_DIFF_EXCEPTION("충돌을 확인하기 위해 비교하던 중 예외가 발생했습니다."),
 
     // DiseaseInfoException
     DISEASE_NOT_FOUND("해당 그룹을 찾을 수 없습니다."),
-
 
     // DiseaseMemberException
     DISEASE_MEMBER_NOT_FOUND("해당 그룹의 명단에 존재하지 않습니다."),

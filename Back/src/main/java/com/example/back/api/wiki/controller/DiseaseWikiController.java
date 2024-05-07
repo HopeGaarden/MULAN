@@ -45,9 +45,8 @@ public class DiseaseWikiController {
         return JsonResult.successOf("위키 등록에 성공하였습니다.");
     }
 
-
-//     위키 백과 수정
-    @PatchMapping("/{wikiId}")
+    // 위키 백과 수정
+    @PatchMapping
     public JsonResult<?> findWiki(@AuthenticationPrincipal Member member,
                                   @Valid @RequestBody DiseaseWikiPatchRequest request) {
         // 해당 위키를 수정할 수 있는 사용자인지 권한 검증
@@ -56,5 +55,15 @@ public class DiseaseWikiController {
         diseaseWikiService.patchWiki(diseaseMember, request);
 
         return JsonResult.successOf("위키 수정에 성공하였습니다.");
+    }
+
+    // 위키 백과 충돌 해결 요청
+    @PostMapping("/conflict")
+    public JsonResult<?> resolveWikiConflict(@AuthenticationPrincipal Member member,
+                                             @Valid @RequestBody DiseaseWikiPatchRequest request) {
+        // 해당 위키를 수정할 수 있는 사용자인지 권한 검증
+        diseaseMemberService.isSpecificDiseaseMember(member, request.DiseaseWikiId());
+
+        return JsonResult.successOf(diseaseWikiService.resolveConflict(request));
     }
 }

@@ -3,18 +3,26 @@ package com.example.back.api.wiki.service;
 import com.example.back.api.wiki.controller.request.DiseaseWikiPatchRequest;
 import com.example.back.api.wiki.controller.request.DiseaseWikiSaveRequest;
 import com.example.back.api.wiki.service.response.DiseaseWikiResponse;
+import com.example.back.api.wiki.service.response.WikiResolveConflictResponse;
+import com.example.back.common.utils.DiffDTO;
+import com.example.back.common.utils.DiffService;
 import com.example.back.domain.auth.disease.DiseaseInfo;
 import com.example.back.domain.auth.disease.DiseaseMember;
 import com.example.back.domain.wiki.DiseaseWiki;
 import com.example.back.domain.wiki.repository.DiseaseWikiRepository;
 import com.example.back.global.exception.DiseaseWikiException;
 import com.example.back.global.exception.ExceptionMessage;
+import com.github.difflib.patch.AbstractDelta;
+import com.github.difflib.patch.DiffException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -47,7 +55,8 @@ public class DiseaseWikiService {
         if (diseaseWikiRepository.existsByDiseaseInfoId(diseaseInfo.getId())) {
             log.error("[BR ERROR] {} : {}", diseaseInfo.getId(), ExceptionMessage.WIKI_ALREADY_EXIST.getText());
             throw new DiseaseWikiException(ExceptionMessage.WIKI_ALREADY_EXIST);
-        };
+        }
+        ;
 
         // 해당 그룹의 질병 정보를 포함해 위키 생성
         diseaseWikiRepository.save(DiseaseWiki.builder()
@@ -66,5 +75,20 @@ public class DiseaseWikiService {
         });
 
         wiki.updateWiki(diseaseMember.getMember().getId(), request.content());
+    }
+
+    public WikiResolveConflictResponse resolveConflict(DiseaseWikiPatchRequest request) {
+        DiseaseWiki wiki = diseaseWikiRepository.findById(request.DiseaseWikiId()).orElseThrow(() -> {
+            log.error("[BR ERROR] {} : {}", request.DiseaseWikiId(), ExceptionMessage.WIKI_NOT_FOUND.getText());
+            throw new DiseaseWikiException(ExceptionMessage.WIKI_NOT_FOUND);
+        });
+
+        List<DiffDTO> diffs = DiffService.calculateDiff(wiki.getContent(), request.content());
+
+        return WikiResolveConflictResponse.builder()
+                .originalContent(wiki.getContent())
+                .newContent(request.content())
+                .diffs(diffs)
+                .build();
     }
 }

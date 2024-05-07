@@ -19,14 +19,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
 import static com.example.back.domain.auth.MemberFixture.새로운_유저_생성;
 import static com.example.back.domain.auth.MemberFixture.일반_유저_생성;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DiseaseWikiServiceTest extends IntegrationHelper {
     @Autowired
@@ -54,7 +55,7 @@ public class DiseaseWikiServiceTest extends IntegrationHelper {
 
     @BeforeEach
     void setup() {
-        member =  memberRepository.save(일반_유저_생성());
+        member = memberRepository.save(일반_유저_생성());
         otherMember = memberRepository.save(새로운_유저_생성());
         disease = diseaseInfoRepository.save(DiseaseInfo.builder()
                 .code("A").name("A 증후군").build());
@@ -185,5 +186,54 @@ public class DiseaseWikiServiceTest extends IntegrationHelper {
         DiseaseWiki result = diseaseWikiRepository.findById(diseaseWiki.getId()).orElseThrow();
         System.out.println("최종 내용: " + result.getContent());
     }
+
+//    @Test
+//    void 동시에_두_사용자가_수정_요청_시_비관적_락_테스트() throws InterruptedException {
+//        Member memberB = memberRepository.save(MemberFixture.새로운_유저_생성B());
+//        DiseaseMember diseaseMemberB = diseaseMemberRepository.save(DiseaseMember.builder()
+//                .diseaseInfo(disease).member(memberB).build());
+//
+//        ExecutorService executor = Executors.newFixedThreadPool(2);
+//        CountDownLatch latch = new CountDownLatch(2);
+//
+//        // 첫 번째 사용자의 수정
+//        executor.submit(() -> {
+//            try {
+//                long startTime = System.currentTimeMillis();
+//                DiseaseWikiPatchRequest request = new DiseaseWikiPatchRequest(diseaseWiki.getId(), "First User Content");
+//                diseaseWikiService.patchWiki(diseaseMember, request);
+//                Thread.sleep(2000); // 첫 번째 사용자가 작업을 완료하기 전까지 일부러 지연
+//                long endTime = System.currentTimeMillis();
+//                System.out.println("User A start time: " + startTime + " end time: " + endTime);
+//            } catch (Exception e) {
+//                System.out.println("Exception for User A: " + e + " message: " + e.getMessage());
+//            } finally {
+//                latch.countDown();
+//            }
+//        });
+//
+//        // 두 번째 사용자의 수정
+//        executor.submit(() -> {
+//            try {
+//                Thread.sleep(500); // 첫 번째 사용자가 락을 획득한 후에 두 번째 사용자가 시작하도록 지연
+//                long startTime = System.currentTimeMillis();
+//                DiseaseWikiPatchRequest request = new DiseaseWikiPatchRequest(diseaseWiki.getId(), "Second User Content");
+//                diseaseWikiService.patchWiki(diseaseMemberB, request);
+//                long endTime = System.currentTimeMillis();
+//                System.out.println("User B start time: " + startTime + " end time: " + endTime);
+//            } catch (Exception e) {
+//                System.out.println("Exception for User B: " + e + " message: " + e.getMessage());
+//            } finally {
+//                latch.countDown();
+//            }
+//        });
+//
+//        latch.await();  // 두 스레드의 완료를 기다림
+//        executor.shutdown();
+//
+//        // 최종 결과 확인
+//        DiseaseWiki result = diseaseWikiRepository.findById(diseaseWiki.getId()).orElseThrow();
+//        System.out.println("최종 내용: " + result.getContent());
+//    }
 
 }
