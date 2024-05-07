@@ -1,7 +1,6 @@
 package com.example.back.domain.feed.tag;
 
 import com.example.back.domain.BaseEntity;
-import com.example.back.domain.feed.tagfeedmapping.TagFeedMapping;
 import jakarta.persistence.*;
 import lombok.*;
 
