@@ -38,17 +38,17 @@ public class Member extends BaseEntity implements UserDetails {
     private String email;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "MEMBER_ROLE", nullable = false)
+    @Column(name = "MEMBER_ROLE")
     @ColumnDefault(value = "'MEMBER'")
     private MemberRole role;
 
     @Column(name = "PROFILE_IMAGE_URL")
     private String profileImageUrl;
 
-    @Column(name = "PUSH_ALARM_YN", nullable = false)
+    @Column(name = "PUSH_ALARM_YN")
     private boolean pushAlarmYn = false;
 
-    @Column(name = "SCORE", nullable = false)
+    @Column(name = "SCORE")
     private int score = 0;
 
     @Builder
