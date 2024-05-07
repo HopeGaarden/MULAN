@@ -45,5 +45,11 @@ public class FeedInfo extends BaseEntity {
         this.images = images;
         this.status = status;
     }
+
+    public void updateFeedInfo(String content, String images, FeedStatus status) {
+        this.content = content;
+        this.images = images;
+        this.status = status;
+    }
 }
 

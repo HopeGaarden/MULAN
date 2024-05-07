@@ -57,7 +57,7 @@ public enum ExceptionMessage {
     LIKE_NOT_FOUND("좋아요 정보를 찾을 수 없습니다. "),
 
     // BookmarkException
-    BOOKMARK_NOT_FOUND("좋아요 정보를 찾을 수 없습니다. "),
+    BOOKMARK_NOT_FOUND("북마크 정보를 찾을 수 없습니다. "),
 
 
     ;
