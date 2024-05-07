@@ -9,9 +9,6 @@ import com.example.back.api.feed.controller.response.FeedInfoResponse;
 import com.example.back.common.utils.imagefile.FileUtils;
 import com.example.back.common.utils.imagefile.ResultFileStore;
 import com.example.back.domain.auth.member.Member;
-import com.example.back.domain.auth.member.repository.MemberRepository;
-import com.example.back.domain.feed.bookmark.repository.BookmarkRepository;
-import com.example.back.domain.feed.comment.repository.CommentRepository;
 import com.example.back.domain.feed.feedinfo.FeedInfo;
 import com.example.back.domain.feed.feedinfo.repository.FeedInfoRepository;
 import com.example.back.domain.feed.like.repository.LikeRepository;
@@ -41,11 +38,11 @@ import java.util.stream.Collectors;
 public class FeedInfoService {
     private final FileUtils fileStore;
     private final FeedInfoRepository feedInfoRepository;
-    private final TagInfoRepository tagInfoRepository;
     private final TagFeedMappingRespoistory tagFeedMappingRespoistory;
+    private final TagInfoService tagInfoService;
     private final MemberService memberService;
     private final BookmarkService bookmarkService;
-    private final CommentRepository commentRepository;
+    private final CommentService commentService;
     private final LikeRepository likeRepository;
 
     @Transactional
@@ -64,8 +61,8 @@ public class FeedInfoService {
         //해시태그 저장
         String[] tagNames = feedInfoRequest.tags();
         for (String tagName : tagNames) {
-            TagInfo tagInfo = tagInfoRepository.findByTagName(tagName)
-                    .orElseGet(() -> tagInfoRepository.save(new TagInfo(tagName)));
+            // 태그 엔티티 조회 혹은 생성
+            TagInfo tagInfo = tagInfoService.getOrCreateTagInfo(tagName);
             // 매핑 테이블에 데이터 삽입
             TagFeedMapping tagFeedMapping = new TagFeedMapping(feedInfo, tagInfo);
             tagFeedMappingRespoistory.save(tagFeedMapping);
@@ -80,7 +77,7 @@ public class FeedInfoService {
                 .findByContentOrTagNameOrderByIdDesc(feedInfoSliceRequest.getSearchKeyword(), pageable);
         List<FeedInfoListResponse> feedInfoListResponse = feedInfoSlice.getContent().stream()
                 .map(feedInfo -> {
-                    Integer commentCount = commentRepository.findByFeedInfo(feedInfo).orElse(new ArrayList<>()).size();
+                    Integer commentCount = commentService.getComments(feedInfo).size();
                     Integer likeCount = likeRepository.findByFeedInfo(feedInfo).orElse(new ArrayList<>()).size();
                     Boolean like = likeRepository.findByMemberAndFeedInfo(member, feedInfo).isPresent();
                     Boolean bookmark = bookmarkService.isBookmarkPresent(member,feedInfo);
@@ -94,14 +91,10 @@ public class FeedInfoService {
 
     @Transactional(readOnly = true)
     public FeedInfoResponse getFeedInfo(Long feedInfoId,Long memberId) {
-        FeedInfo feedInfo = feedInfoRepository.findById(feedInfoId)
-                .orElseThrow(() -> {
-                    log.error("[Not Found Exception]: {}", ExceptionMessage.FEEDINFO_NOT_FOUND.getText());
-                    return new FeedInfoException(ExceptionMessage.FEEDINFO_NOT_FOUND);
-                });
+        FeedInfo feedInfo = feedInfoValidation(feedInfoId);
         Member member = memberService.memberValidation(memberId);
         return FeedInfoResponse.ResponseGetFeedInfo(feedInfo,
-                commentRepository.findByFeedInfo(feedInfo).orElse(new ArrayList<>()).size(),
+                commentService.getComments(feedInfo).size(),
                 likeRepository.findByFeedInfo(feedInfo).orElse(new ArrayList<>()).size(),
                 likeRepository.findByMemberAndFeedInfo(member,feedInfo).isPresent(),
                 bookmarkService.isBookmarkPresent(member,feedInfo));
@@ -112,21 +105,13 @@ public class FeedInfoService {
         //피드 수정
         String resultFileStore = getResultFileStore(images);
         FeedInfo feedInfo = feedInfoValidation(feedInfoId);
-        FeedInfo updatedFeedInfo = FeedInfo.builder()
-                .member(feedInfo.getMember())
-                .images(resultFileStore)
-                .content(feedInfoUpdateRequest.content())
-                .status(feedInfoUpdateRequest.status())
-                .category(feedInfo.getCategory())
-                .build();
-        feedInfoRepository.save(updatedFeedInfo);
+        feedInfo.updateFeedInfo(feedInfoUpdateRequest.content(), resultFileStore,feedInfoUpdateRequest.status());
         // 태그-피드 매핑 엔티티 업데이트
         String[] tagNames = feedInfoUpdateRequest.tags();
         List<TagFeedMapping> tagFeedMappings = new ArrayList<>();
         for (String tagName : tagNames) {
             // 태그 엔티티 조회 혹은 생성
-            TagInfo tagInfo = tagInfoRepository.findByTagName(tagName)
-                    .orElseGet(() -> tagInfoRepository.save(new TagInfo(tagName)));
+            TagInfo tagInfo = tagInfoService.getOrCreateTagInfo(tagName);
             // 태그-피드 매핑 엔티티 생성
             TagFeedMapping tagFeedMapping = TagFeedMapping.builder()
                     .feedInfo(feedInfo)
@@ -134,16 +119,15 @@ public class FeedInfoService {
                     .build();
             tagFeedMappings.add(tagFeedMapping);
         }
-
         // 기존에 연결된 태그-피드 매핑 엔티티 삭제 후 새로운 매핑 엔티티 추가
-        tagFeedMappingRespoistory.deleteByFeedInfo(feedInfo);
+        tagFeedMappingRespoistory.deleteAllByFeedInfo(feedInfo);
         tagFeedMappingRespoistory.saveAll(tagFeedMappings);
     }
     @Transactional
     public void deleteFeedInfo(Long feedInfoId) {
         FeedInfo feedInfo = feedInfoValidation(feedInfoId);
+        tagFeedMappingRespoistory.deleteAllByFeedInfo(feedInfo);
         feedInfoRepository.delete(feedInfo);
-        tagFeedMappingRespoistory.deleteByFeedInfo(feedInfo);
     }
     //피드 검증 메서드
     public FeedInfo feedInfoValidation(Long feedInfoId){
@@ -152,6 +136,7 @@ public class FeedInfoService {
             return new FeedInfoException(ExceptionMessage.FEEDINFO_NOT_FOUND);
         });
     }
+    // 파일 저장 메서드
     private String getResultFileStore(List<MultipartFile> images) {
         List<ResultFileStore> resultFileStore = null;
         try {
@@ -163,7 +148,4 @@ public class FeedInfoService {
                 .map(rfs -> rfs.folderPath() + "/" + rfs.storeFileName()) // 각 요소를 문자열로 변환
                 .collect(Collectors.joining(","));
     }
-
-
-
 }
