@@ -23,6 +23,7 @@ import java.util.List;
 public class FeedInfoController {
     private final FeedInfoService feedInfoService;
 
+    //피드 등록
     @PostMapping()
     public ResponseEntity<String> createFeedInfo(@AuthenticationPrincipal Member member,
                                                  @RequestPart @Valid FeedInfoRequest feedInfo,
@@ -31,6 +32,7 @@ public class FeedInfoController {
         return ResponseEntity.ok("피드를 생성 하였습니다.");
     }
 
+    // 피드 검색
     @GetMapping
     public ResponseEntity<Slice<FeedInfoListResponse>> getFeedInfoList(@AuthenticationPrincipal Member member
                                                                   ,@RequestBody FeedInfoSliceRequest feedInfoSliceRequest) {
@@ -39,6 +41,7 @@ public class FeedInfoController {
                 .body(responseGetPostList);
     }
 
+    // 피드 조회(상세보기)
     @GetMapping("/{feedInfoId}")
     public ResponseEntity<FeedInfoResponse> getFeedInfo(@AuthenticationPrincipal Member member
                                                         ,@PathVariable Long feedInfoId) {
@@ -46,7 +49,8 @@ public class FeedInfoController {
         return ResponseEntity.ok()
                 .body(feedInfoResponse);
     }
-
+    
+    // 피드 수정
     @PatchMapping("/{feedInfoId}")
     public ResponseEntity<String> updateFeedInfo(@PathVariable Long feedInfoId,
                                                  @RequestPart @Valid FeedInfoUpdateRequest feedInfoUpdateRequest,
@@ -55,7 +59,8 @@ public class FeedInfoController {
         return ResponseEntity.ok("피드를 수정 하였습니다.");
     }
 
-    @DeleteMapping("/{postId}")
+    // 피드 삭제
+    @DeleteMapping("/{feedInfoId}")
     public ResponseEntity<String> deleteFeedInfo(@PathVariable Long feedInfoId) {
         feedInfoService.deleteFeedInfo(feedInfoId);
         return ResponseEntity.ok("피드를 삭제 하였습니다.");

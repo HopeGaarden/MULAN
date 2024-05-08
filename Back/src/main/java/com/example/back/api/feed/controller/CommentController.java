@@ -18,6 +18,7 @@ import java.util.List;
 public class CommentController {
     private final CommentService commentService;
 
+    // 댓글 추가
     @PostMapping
     public ResponseEntity<String> createComment(@AuthenticationPrincipal Member member,
                                                 @RequestBody CommentRequest commentRequest) {
@@ -25,6 +26,7 @@ public class CommentController {
         return ResponseEntity.ok("댓글을 생성 하였습니다.");
     }
 
+    // 댓글 수정
     @PatchMapping("/{commentId}")
     public ResponseEntity<String> updateComment(@PathVariable Long commentId,
                                                 @RequestBody CommentUpdateRequest commentUpdateRequest) {
@@ -33,12 +35,14 @@ public class CommentController {
                 .body(commentUpdateRequest.text());
     }
 
+    // 댓글 삭제
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<String> deleteComment(@RequestBody Long commentId){
+    public ResponseEntity<String> deleteComment(@PathVariable Long commentId){
         commentService.deleteComment(commentId);
         return ResponseEntity.ok("댓글을 삭제 하였습니다.");
     }
 
+    // 댓글 목록 조회
     @GetMapping("{feedInfoId}")
     public ResponseEntity<List<CommentResponse>> getCommentList(@PathVariable Long feedInfoId) {
         List<CommentResponse> commentResponses = commentService.getCommentList(feedInfoId);
