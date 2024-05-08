@@ -11,9 +11,7 @@ import com.example.back.common.utils.imagefile.ResultFileStore;
 import com.example.back.domain.auth.member.Member;
 import com.example.back.domain.feed.feedinfo.FeedInfo;
 import com.example.back.domain.feed.feedinfo.repository.FeedInfoRepository;
-import com.example.back.domain.feed.like.repository.LikeRepository;
 import com.example.back.domain.feed.tag.TagInfo;
-import com.example.back.domain.feed.tag.repository.TagInfoRepository;
 import com.example.back.domain.feed.tagfeedmapping.TagFeedMapping;
 import com.example.back.domain.feed.tagfeedmapping.repository.TagFeedMappingRespoistory;
 import com.example.back.global.exception.*;
@@ -43,7 +41,7 @@ public class FeedInfoService {
     private final MemberService memberService;
     private final BookmarkService bookmarkService;
     private final CommentService commentService;
-    private final LikeRepository likeRepository;
+    private final LikeService likeService;
 
     @Transactional
     public void createFeedInfo(Long memberId, FeedInfoRequest feedInfoRequest, List<MultipartFile> images){
@@ -78,8 +76,8 @@ public class FeedInfoService {
         List<FeedInfoListResponse> feedInfoListResponse = feedInfoSlice.getContent().stream()
                 .map(feedInfo -> {
                     Integer commentCount = commentService.getComments(feedInfo).size();
-                    Integer likeCount = likeRepository.findByFeedInfo(feedInfo).orElse(new ArrayList<>()).size();
-                    Boolean like = likeRepository.findByMemberAndFeedInfo(member, feedInfo).isPresent();
+                    Integer likeCount = likeService.getLikes(feedInfo).size();
+                    Boolean like = likeService.pressLike(member, feedInfo);
                     Boolean bookmark = bookmarkService.isBookmarkPresent(member,feedInfo);
                     return FeedInfoListResponse
                             .ResponseGetFeedInfoList(feedInfo, commentCount, likeCount, like, bookmark);
@@ -95,8 +93,8 @@ public class FeedInfoService {
         Member member = memberService.memberValidation(memberId);
         return FeedInfoResponse.ResponseGetFeedInfo(feedInfo,
                 commentService.getComments(feedInfo).size(),
-                likeRepository.findByFeedInfo(feedInfo).orElse(new ArrayList<>()).size(),
-                likeRepository.findByMemberAndFeedInfo(member,feedInfo).isPresent(),
+                likeService.getLikes(feedInfo).size(),
+                likeService.pressLike(member, feedInfo),
                 bookmarkService.isBookmarkPresent(member,feedInfo));
     }
 
