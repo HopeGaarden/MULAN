@@ -5,8 +5,10 @@ import com.example.back.domain.auth.member.Member;
 import com.example.back.domain.feed.bookmark.Bookmark;
 import com.example.back.domain.feed.bookmark.repository.BookmarkRepository;
 import com.example.back.domain.feed.feedinfo.FeedInfo;
+import com.example.back.domain.feed.feedinfo.repository.FeedInfoRepository;
 import com.example.back.global.exception.BookmarkException;
 import com.example.back.global.exception.ExceptionMessage;
+import com.example.back.global.exception.FeedInfoException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,20 +19,27 @@ import org.springframework.stereotype.Service;
 public class BookmarkService {
     private final BookmarkRepository bookmarkRepository;
     private final MemberService memberService;
-    private final FeedInfoService feedInfoService;
+    private final FeedInfoRepository feedInfoRepository;
 
     public void createBookmark(Long memberId, Long feedInfoId) {
         Member member = memberService.memberValidation(memberId);
-        FeedInfo feedInfo = feedInfoService.feedInfoValidation(feedInfoId);
+        FeedInfo feedInfo = feedInfoValidation(feedInfoId);
         Bookmark bookmark = new Bookmark(feedInfo,member);
         bookmarkRepository.save(bookmark);
     }
 
     public void deleteBookmark(Long memberId, Long feedInfoId) {
         Member member = memberService.memberValidation(memberId);
-        FeedInfo feedInfo = feedInfoService.feedInfoValidation(feedInfoId);
+        FeedInfo feedInfo = feedInfoValidation(feedInfoId);
         Bookmark bookmark = bookmarkValidation(member,feedInfo);
         bookmarkRepository.delete(bookmark);
+    }
+    //피드 검증 메서드
+    public FeedInfo feedInfoValidation(Long feedInfoId){
+        return feedInfoRepository.findById(feedInfoId).orElseThrow(() -> {
+            log.error("[Not Found Exception]: {}", ExceptionMessage.FEEDINFO_NOT_FOUND.getText());
+            return new FeedInfoException(ExceptionMessage.FEEDINFO_NOT_FOUND);
+        });
     }
 
     // 북마크 검증 메서드

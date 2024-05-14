@@ -4,9 +4,11 @@ import com.example.back.api.auth.service.MemberService;
 import com.example.back.api.feed.controller.response.LikeMemberResponse;
 import com.example.back.domain.auth.member.Member;
 import com.example.back.domain.feed.feedinfo.FeedInfo;
+import com.example.back.domain.feed.feedinfo.repository.FeedInfoRepository;
 import com.example.back.domain.feed.like.Like;
 import com.example.back.domain.feed.like.repository.LikeRepository;
 import com.example.back.global.exception.ExceptionMessage;
+import com.example.back.global.exception.FeedInfoException;
 import com.example.back.global.exception.LikeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,28 +24,36 @@ import java.util.stream.Collectors;
 public class LikeService {
     private final LikeRepository likeRepository;
     private final MemberService memberService;
-    private final FeedInfoService feedInfoService;
+    private final FeedInfoRepository feedInfoRepository;
 
     public void createLike(Long memberId, Long feedInfoId) {
         Member member = memberService.memberValidation(memberId);
-        FeedInfo feedInfo = feedInfoService.feedInfoValidation(feedInfoId);
+        FeedInfo feedInfo = feedInfoValidation(feedInfoId);
         Like like = new Like(feedInfo,member);
         likeRepository.save(like);
     }
 
     public void deleteLike(Long memberId, Long feedInfoId) {
         Member member = memberService.memberValidation(memberId);
-        FeedInfo feedInfo = feedInfoService.feedInfoValidation(feedInfoId);
+        FeedInfo feedInfo = feedInfoValidation(feedInfoId);
         Like like = likeValidation(member,feedInfo);
         likeRepository.delete(like);
     }
 
     public List<LikeMemberResponse> getLikeMemberList(Long feedInfoId) {
-        FeedInfo feedInfo = feedInfoService.feedInfoValidation(feedInfoId);
+        FeedInfo feedInfo = feedInfoValidation(feedInfoId);
         List<Like> likes = getLikes(feedInfo);
         return likes.stream()
                 .map(LikeMemberResponse::getLikesResponse)
                 .collect(Collectors.toList());
+    }
+
+    //피드 검증 메서드
+    public FeedInfo feedInfoValidation(Long feedInfoId){
+        return feedInfoRepository.findById(feedInfoId).orElseThrow(() -> {
+            log.error("[Not Found Exception]: {}", ExceptionMessage.FEEDINFO_NOT_FOUND.getText());
+            return new FeedInfoException(ExceptionMessage.FEEDINFO_NOT_FOUND);
+        });
     }
 
     // 좋아요 검증 메서드
