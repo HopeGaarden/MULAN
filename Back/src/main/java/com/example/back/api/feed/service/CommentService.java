@@ -8,8 +8,10 @@ import com.example.back.domain.auth.member.Member;
 import com.example.back.domain.feed.comment.Comment;
 import com.example.back.domain.feed.comment.repository.CommentRepository;
 import com.example.back.domain.feed.feedinfo.FeedInfo;
+import com.example.back.domain.feed.feedinfo.repository.FeedInfoRepository;
 import com.example.back.global.exception.CommentException;
 import com.example.back.global.exception.ExceptionMessage;
+import com.example.back.global.exception.FeedInfoException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,10 +27,10 @@ import java.util.stream.Collectors;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final MemberService memberService;
-    private final FeedInfoService feedInfoService;
+    private final FeedInfoRepository feedInfoRepository;
     public void createComment(Long memberId, CommentRequest commentRequest) {
         Member member = memberService.memberValidation(memberId);
-        FeedInfo feedInfo = feedInfoService.feedInfoValidation(commentRequest.feedInfoId());
+        FeedInfo feedInfo = feedInfoValidation(commentRequest.feedInfoId());
         Comment comment = new Comment(feedInfo,member, commentRequest.text());
         commentRepository.save(comment);
     }
@@ -46,13 +48,19 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<CommentResponse> getCommentList(Long feedInfoId) {
-        FeedInfo feedInfo = feedInfoService.feedInfoValidation(feedInfoId);
+        FeedInfo feedInfo = feedInfoValidation(feedInfoId);
         List<Comment> comments = getComments(feedInfo);
         return comments.stream()
                 .map(CommentResponse::getCommentResponse)
                 .collect(Collectors.toList());
     }
-
+    //피드 검증 메서드
+    public FeedInfo feedInfoValidation(Long feedInfoId){
+        return feedInfoRepository.findById(feedInfoId).orElseThrow(() -> {
+            log.error("[Not Found Exception]: {}", ExceptionMessage.FEEDINFO_NOT_FOUND.getText());
+            return new FeedInfoException(ExceptionMessage.FEEDINFO_NOT_FOUND);
+        });
+    }
     // 댓글 목록 반환 메서드
     public List<Comment> getComments(FeedInfo feedInfo){
         return commentRepository.findByFeedInfo(feedInfo).orElse(new ArrayList<>());
