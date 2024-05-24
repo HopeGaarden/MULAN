@@ -29,6 +29,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Key;
 import java.util.Base64;
@@ -252,9 +253,8 @@ class AuthServiceTest extends IntegrationHelper {
                 .password(member.getPassword())
                 .passwordVerify(member.getPassword())
                 .build();
-
         // when
-        authService.signUp(request);
+        authService.signUp(request,null);
 
         Member findMember = memberRepository.findByEmail(member.getEmail()).get();
 
@@ -278,7 +278,7 @@ class AuthServiceTest extends IntegrationHelper {
 
         // when
         var e = assertThrows(MemberException.class, () -> {
-            authService.signUp(request);
+            authService.signUp(request,null);
         });
 
         assertEquals(ExceptionMessage.MEMBER_EMAIL_ALREADY_EXIST.getText(), e.getMessage());
@@ -296,10 +296,9 @@ class AuthServiceTest extends IntegrationHelper {
                 .password(member.getPassword())
                 .passwordVerify(member.getPassword() + " ")
                 .build();
-
         // when
         var e = assertThrows(SignUpException.class, () -> {
-            authService.signUp(request);
+            authService.signUp(request, null);
         });
 
         assertEquals(ExceptionMessage.MEMBER_PASSWORD_DO_NOT_MATCH.getText(), e.getMessage());
@@ -344,7 +343,7 @@ class AuthServiceTest extends IntegrationHelper {
     private Callable<Boolean> createSignUpCallable(SignUpRequest request) {
         return () -> {
             try {
-                authService.signUp(request);
+                authService.signUp(request,null);
                 return true;
             } catch (Exception e) {
                 return false; // 실패 시 false 반환

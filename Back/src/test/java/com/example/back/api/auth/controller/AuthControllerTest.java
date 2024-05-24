@@ -152,7 +152,7 @@ class AuthControllerTest extends IntegrationHelper {
                 .build();
 
         // when
-        doNothing().when(authService).signUp(any(SignUpRequest.class));
+        doNothing().when(authService).signUp(any(SignUpRequest.class),null);
 
         mockMvc.perform(post("/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -5,6 +5,9 @@ import com.example.back.api.auth.controller.request.AuthRequest;
 import com.example.back.api.auth.controller.request.SignUpRequest;
 import com.example.back.api.auth.service.jwt.JwtTokenProvider;
 import com.example.back.api.auth.service.response.AuthResponse;
+import com.example.back.domain.auth.medical.MedicalInfo;
+import com.example.back.domain.auth.medical.constant.VerifyStatus;
+import com.example.back.domain.auth.medical.repository.MedicalInfoRepository;
 import com.example.back.domain.auth.member.constant.MemberRole;
 import com.example.back.global.event.Events;
 import com.example.back.global.exception.ExceptionMessage;
@@ -19,16 +22,19 @@ import com.example.back.domain.token.refresh.RefreshToken;
 import com.example.back.domain.token.refresh.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 @Slf4j
 @Service
@@ -40,6 +46,8 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final MemberRepository memberRepository;
+    private final MedicalInfoRepository medicalInfoRepository;
+    private final OCRService ocrService;
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenRepository jwtTokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -174,9 +182,7 @@ public class AuthService {
 
     // 회원가입 로직
     @Transactional
-    public void signUp(SignUpRequest request) {
-        // 입력된 패스워드가 서로 일치하는지 확인
-        verifyCommand(request);
+    public void signUp(SignUpRequest request, MultipartFile diagnosis) {
 
         // 이메일 중복 확인
         validateNonExistentEmail(request.email());
@@ -187,6 +193,22 @@ public class AuthService {
         // 회원 등록
         Member member = memberRepository.save(memberMapper.apply(request, encodedPassword));
 
+        try {
+            Map<String, String> extractedInfo = ocrService.extractTextFromImage(diagnosis);
+            log.info("[추출된 정보]: {}",extractedInfo);
+            MedicalInfo medicalInfo = MedicalInfo.builder()
+                    .member(member)
+                    .diseaseInfoId(extractedInfo.get("diseaseInfoId"))
+                    .hospitalInfo(extractedInfo.get("hospitalInfo"))
+                    .status(VerifyStatus.PENDING)
+                    .registrationID(extractedInfo.get("registrationID"))
+                    .confirmationDate(extractedInfo.get("confirmationDate"))
+                    .build();
+            medicalInfoRepository.save(medicalInfo);
+        } catch (IOException | JSONException e) {
+            throw new RuntimeException(e);
+        }
+
         // 회원가입 축하 메일 발송
         Events.raise(new RegisteredEvent(member.getId(), member.getEmail(), member.getNickname()));
 
@@ -196,13 +218,6 @@ public class AuthService {
         if (memberRepository.existsByEmail(email)) {
             log.error("[BR ERROR] {} : {}", email, ExceptionMessage.MEMBER_EMAIL_ALREADY_EXIST.getText());
             throw new MemberException(ExceptionMessage.MEMBER_EMAIL_ALREADY_EXIST);
-        }
-    }
-
-    private void verifyCommand(SignUpRequest request) {
-        if (!request.password().equals(request.passwordVerify())) {
-            log.error("[BR ERROR]: {}", ExceptionMessage.MEMBER_PASSWORD_DO_NOT_MATCH.getText());
-            throw new SignUpException(ExceptionMessage.MEMBER_PASSWORD_DO_NOT_MATCH);
         }
     }
 
