@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/auth")
@@ -25,9 +26,9 @@ public class AuthController {
     private String domain;
 
     @PostMapping("/signup")
-    public ResponseEntity<String> requestSignup(@RequestBody @Valid SignUpRequest request) {
-        authService.signUp(request);
-
+    public ResponseEntity<String> requestSignup(@RequestPart(name = "request") @Valid SignUpRequest request,
+                                                @RequestPart(required = false, name = "diagnosis") MultipartFile diagnosis) {
+        authService.signUp(request,diagnosis);
         return ResponseEntity.ok("회원가입이 완료되었습니다.");
     }
 
