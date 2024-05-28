@@ -87,6 +87,7 @@ public class OCRService {
                     }
                     if (inferText.startsWith("국제질병분류번호:")) {
                         extractedData.put("diseaseInfoId", getNextInferText(fields, i + 1).replace(")", ""));
+                        extractedData.put("diseaseInfoName", getPreviousInferText(fields, i - 1));
                     }
                     if (inferText.startsWith("발행일")) {
                         confirmationDateFound = true;
@@ -115,6 +116,13 @@ public class OCRService {
 
     private String getNextInferText(JSONArray fields, int index) throws JSONException {
         if (index < fields.length()) {
+            return fields.getJSONObject(index).optString("inferText", "").trim();
+        }
+        return "";
+    }
+
+    private String getPreviousInferText(JSONArray fields, int index) throws JSONException {
+        if (index >= 0) {
             return fields.getJSONObject(index).optString("inferText", "").trim();
         }
         return "";

@@ -198,6 +198,7 @@ public class AuthService {
             log.info("[추출된 정보]: {}",extractedInfo);
             MedicalInfo medicalInfo = MedicalInfo.builder()
                     .member(member)
+                    .diseaseInfoName(extractedInfo.get("diseaseInfoName"))
                     .diseaseInfoId(extractedInfo.get("diseaseInfoId"))
                     .hospitalInfo(extractedInfo.get("hospitalInfo"))
                     .status(VerifyStatus.PENDING)
