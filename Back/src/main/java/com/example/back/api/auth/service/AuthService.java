@@ -5,15 +5,17 @@ import com.example.back.api.auth.controller.request.AuthRequest;
 import com.example.back.api.auth.controller.request.SignUpRequest;
 import com.example.back.api.auth.service.jwt.JwtTokenProvider;
 import com.example.back.api.auth.service.response.AuthResponse;
+import com.example.back.domain.auth.disease.DiseaseInfo;
+import com.example.back.domain.auth.disease.DiseaseMember;
+import com.example.back.domain.auth.disease.DiseaseMemberStatus;
+import com.example.back.domain.auth.disease.repository.DiseaseInfoRepository;
+import com.example.back.domain.auth.disease.repository.DiseaseMemberRepository;
 import com.example.back.domain.auth.medical.MedicalInfo;
 import com.example.back.domain.auth.medical.constant.VerifyStatus;
 import com.example.back.domain.auth.medical.repository.MedicalInfoRepository;
 import com.example.back.domain.auth.member.constant.MemberRole;
 import com.example.back.global.event.Events;
-import com.example.back.global.exception.ExceptionMessage;
-import com.example.back.global.exception.MemberException;
-import com.example.back.global.exception.SignUpException;
-import com.example.back.global.exception.TokenException;
+import com.example.back.global.exception.*;
 import com.example.back.domain.auth.member.Member;
 import com.example.back.domain.auth.member.repository.MemberRepository;
 import com.example.back.domain.token.jwt.JwtToken;
@@ -34,6 +36,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 @Slf4j
@@ -52,6 +55,8 @@ public class AuthService {
     private final JwtTokenRepository jwtTokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final DiseaseInfoRepository diseaseInfoRepository;
+    private final DiseaseMemberRepository diseaseMemberRepository;
 
     // 로그인 로직
     @Transactional
@@ -192,11 +197,13 @@ public class AuthService {
 
         // 회원 등록
         Member member = memberRepository.save(memberMapper.apply(request, encodedPassword));
-
+    
+        //진단서 정보 등록
+        MedicalInfo medicalInfo;
         try {
             Map<String, String> extractedInfo = ocrService.extractTextFromImage(diagnosis);
-            log.info("[추출된 정보]: {}",extractedInfo);
-            MedicalInfo medicalInfo = MedicalInfo.builder()
+            log.info("[추출된 정보]: {}", extractedInfo);
+            medicalInfo = MedicalInfo.builder()
                     .member(member)
                     .diseaseInfoName(extractedInfo.get("diseaseInfoName"))
                     .diseaseInfoId(extractedInfo.get("diseaseInfoId"))
@@ -210,6 +217,35 @@ public class AuthService {
             throw new RuntimeException(e);
         }
 
+        // 회원 그룹 생성
+        List<DiseaseInfo> diseases = diseaseInfoRepository.findByCode(medicalInfo.getDiseaseInfoId()).orElseThrow(()->{
+            log.error("[BR ERROR] {}", ExceptionMessage.DISEASE_NOT_FOUND.getText());
+            return new DiseaseInfoException(ExceptionMessage.DISEASE_NOT_FOUND);
+        });
+        
+        // 질병 선택 로직
+        DiseaseInfo diseaseInfo;
+        if (diseases.size() == 1) {
+            diseaseInfo = diseases.get(0);
+        }
+        else {
+            diseaseInfo = diseases.stream()
+                    .filter(disease -> disease.getName().contains(medicalInfo.getDiseaseInfoName()))
+                    .findFirst()
+                    .orElseThrow(() -> {
+                        log.error("[BR ERROR] {}", ExceptionMessage.DISEASE_NOT_FOUND.getText());
+                        return new DiseaseInfoException(ExceptionMessage.DISEASE_NOT_FOUND);
+                    });
+        }
+        
+        // 질병 그룹화
+        DiseaseMember diseaseMember = DiseaseMember.builder()
+                                                   .diseaseInfo(diseaseInfo)
+                                                   .member(member)
+                                                   .status(DiseaseMemberStatus.MEMBER)
+                                                   .build();
+        diseaseMemberRepository.save(diseaseMember);
+
         // 회원가입 축하 메일 발송
         Events.raise(new RegisteredEvent(member.getId(), member.getEmail(), member.getNickname()));
 
@@ -221,6 +257,8 @@ public class AuthService {
             throw new MemberException(ExceptionMessage.MEMBER_EMAIL_ALREADY_EXIST);
         }
     }
+
+
 
     BiFunction<SignUpRequest, String, Member> memberMapper = (request, encodedPassword) -> Member.builder()
             .email(request.email())
