@@ -14,19 +14,23 @@ public class DiseaseInfo {
     @Column(name = "DISEASE_INFO_ID")
     private Long id;
 
-    @Column(name = "CODE", nullable = false, unique = true)
+    @Column(name = "CODE", nullable = false)
     private String code;        // 질병 코드
 
     @Column(name = "NAME", nullable = false)
     private String name;        // 병명
 
+    @Column(name = "STANDARD", nullable = false, columnDefinition = "TEXT")
+    private String standard;        // 검사기준
+
     @Column(name = "SCORE")
-    private int score = 0; // 그룹 점수
+    private int score; // 그룹 점수
 
     @Builder
-    public DiseaseInfo(String code, String name, int score) {
+    public DiseaseInfo(String code, String name, String standard,int score) {
         this.code = code;
         this.name = name;
+        this.standard = standard;
         this.score = score;
     }
 }
