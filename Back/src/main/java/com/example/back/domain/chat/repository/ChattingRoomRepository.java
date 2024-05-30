@@ -1,13 +1,11 @@
 package com.example.back.domain.chat.repository;
 
 import com.example.back.domain.chat.ChattingRoom;
-import com.example.back.domain.chat.dto.ChattingRoomSimpleResponse;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-
-public interface ChattingRoomRepository {
+public interface ChattingRoomRepository extends JpaRepository<ChattingRoom, Long> {
 
     ChattingRoom save(ChattingRoom chattingRoom);
 
-    List<ChattingRoomSimpleResponse> findMyChattingRooms(Long memberId);
+    ChattingRoom findByDiseaseId(Long diseaseId);
 }
