@@ -6,7 +6,6 @@ import lombok.*;
 
 @Getter
 @Builder
-@EqualsAndHashCode(of = "id", callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity

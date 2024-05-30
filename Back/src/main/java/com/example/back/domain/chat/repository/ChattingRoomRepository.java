@@ -9,5 +9,5 @@ public interface ChattingRoomRepository {
 
     ChattingRoom save(ChattingRoom chattingRoom);
 
-    List<ChattingRoomSimpleResponse> findMyChattingRooms(Long authId);
+    List<ChattingRoomSimpleResponse> findMyChattingRooms(Long memberId);
 }

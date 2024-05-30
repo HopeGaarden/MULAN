@@ -9,5 +9,5 @@ public interface ChatRepository {
 
     Chat save(Chat chat);
 
-    List<ChatHistoryResponse> findChattingHistoryByChatId(Long authId, Long chattingRoomId, Long chatId, Integer pageSize);
+    List<ChatHistoryResponse> findChattingHistoryByChatId(Long memberId, Long chattingRoomId, Long chatId, Integer pageSize);
 }
