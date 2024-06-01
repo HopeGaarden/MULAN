@@ -73,20 +73,7 @@ dependencies {
 
     // Chat 관련 의존성
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.springframework.boot:spring-boot-devtools'
-
-    // WebJars
-    implementation 'org.webjars:bootstrap:4.6.0'
-    implementation 'org.webjars:vue:2.6.14'
-    implementation 'org.webjars.bower:axios:0.17.1'
-    implementation 'org.webjars:jquery:3.6.0'
-    implementation 'org.webjars:sockjs-client:1.1.2'
-    implementation 'org.webjars:stomp-websocket:2.3.3'
-
-    // Gson for JSON manipulation
-    implementation 'com.google.code.gson:gson:2.9.1'
-
+    implementation 'org.webjars:sockjs-client:1.5.1'
 }
 
 

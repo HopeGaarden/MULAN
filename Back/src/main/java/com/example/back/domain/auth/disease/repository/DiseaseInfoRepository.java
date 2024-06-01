@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface DiseaseInfoRepository extends JpaRepository<DiseaseInfo, Long> {
     Optional<List<DiseaseInfo>> findByCode(String code);
 
+    Optional<List<DiseaseInfo>> findByNameAndCode(String name, String code);
+
 }

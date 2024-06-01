@@ -30,7 +30,6 @@ public class ChatRoomController {
     private final AuthService authService;
     private final SimpMessagingTemplate messagingTemplate;
 
-
     // TODO: 내 채팅방 조회
     @GetMapping("/chats")
     public ResponseEntity<ChattingRoomSimpleResponse> findMyChat(@AuthenticationPrincipal Member member) {
@@ -42,9 +41,8 @@ public class ChatRoomController {
     @PostMapping("/chats")
     public ResponseEntity<Void> createChattingRoom(@AuthenticationPrincipal Member member) {
 
-
         ChattingRoom chattingRoom = chatRoomService.createChattingRoom(member);
-        return ResponseEntity.created(URI.create(chattingRoom.getDiseaseId() + "/chat/" + chattingRoom.getId())).build();
+        return ResponseEntity.created(URI.create("/" + chattingRoom.getDiseaseId() + "/chats/" + chattingRoom.getId())).build();
     }
 
     // TODO: 채팅방 채팅 내역 반환
@@ -60,7 +58,6 @@ public class ChatRoomController {
         return ResponseEntity.ok(chatRoomService.findChattingHistoryByChatId(findMember.getId(), chattingRoomId, chatId, pageSize));
     }
 
-
     // TODO: 채팅 보내기
     // linking url : ws://localhost:8060/ws-stomp
     // subscribe url : ws://localhost:8060/ws-stomp/sub/chats/1
@@ -70,10 +67,11 @@ public class ChatRoomController {
             @DestinationVariable final Long chatRoomId,
             final ChatMessageRequest chattingRequest
     ) {
+        System.out.println("chat 메서드 호출");
+
         Chat chat = chatRoomService.chat(chatRoomId, chattingRequest);
         messagingTemplate.convertAndSend("/sub/chats/" + chatRoomId, chattingRequest);
         return ChatMessageResponse.from(chat);
     }
-
 
 }
