@@ -5,6 +5,7 @@ import com.example.back.global.exception.MemberException;
 import com.example.back.domain.auth.member.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +37,8 @@ public class AuthConfig {
 
         return new ObjectMapper()
                 // 객체의 속성 이름을 snake-case로 설정
-                .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+                .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+                .registerModule(new JavaTimeModule());
     }
 
     @Bean
