@@ -30,6 +30,10 @@ public class SecurityConfig {
                         authorizeHttpRequest
                                 // UnAuth Area
                                 .requestMatchers("/auth/**").permitAll()
+                                // WebSock Area
+                                .requestMatchers("/ws-stomp/**").permitAll()
+//                                // Chat Area - 테스트를 위해 잠시 열어둠
+//                                .requestMatchers("/chat").permitAll()
                                 // Others
                                 .anyRequest().authenticated()
                 )

@@ -148,7 +148,6 @@ class AuthControllerTest extends IntegrationHelper {
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .password(member.getPassword())
-                .passwordVerify(member.getPassword())
                 .build();
 
         // when
@@ -170,7 +169,6 @@ class AuthControllerTest extends IntegrationHelper {
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .password("@@@@@@@@@@")
-                .passwordVerify(member.getPassword())
                 .build();
 
         mockMvc.perform(post("/auth/signup")
@@ -190,7 +188,6 @@ class AuthControllerTest extends IntegrationHelper {
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .password("Aa@1")
-                .passwordVerify(member.getPassword())
                 .build();
 
         mockMvc.perform(post("/auth/signup")

@@ -59,6 +59,9 @@ public enum ExceptionMessage {
     // BookmarkException
     BOOKMARK_NOT_FOUND("북마크 정보를 찾을 수 없습니다. "),
 
+    // ChatException
+    CHAT_NOT_FOUND("채팅방 정보를 찾을 수 없습니다."),
+    CHAT_ALREADY_EXIST("이미 채팅방이 존재합니다."),
 
     ;
     private final String text;
