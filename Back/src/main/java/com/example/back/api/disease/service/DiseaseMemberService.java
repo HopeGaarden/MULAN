@@ -34,13 +34,13 @@ public class DiseaseMemberService {
         });
     }
 
-    public DiseaseMember isSpecificDiseaseMember(Member contextMember, Long diseaseInfoId) {
+    public DiseaseMember isSpecificDiseaseMember(Member contextMember, Long diseaseWikiId) {
         Member member = memberRepository.findByEmail(contextMember.getEmail()).orElseThrow(() -> {
             log.error("[BR ERROR]: {}", ExceptionMessage.MEMBER_NOT_FOUND.getText());
             throw new MemberException(ExceptionMessage.MEMBER_NOT_FOUND);
         });
 
-        DiseaseWiki wiki = diseaseWikiRepository.findByDiseaseInfoId(diseaseInfoId).orElseThrow(() -> {
+        DiseaseWiki wiki = diseaseWikiRepository.findById(diseaseWikiId).orElseThrow(() -> {
             log.error("[BR ERROR]: {}", ExceptionMessage.WIKI_NOT_FOUND.getText());
             throw new DiseaseWikiException(ExceptionMessage.WIKI_NOT_FOUND);
         });

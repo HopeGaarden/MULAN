@@ -6,8 +6,7 @@ import java.util.List;
 
 @Builder
 public record DiffDTO(
-        int originalPosition,
-        int newPosition,
-        List<String> originalLines,
-        List<String> newLines
+        int position,
+        String originalLine,
+        String newLine
 ) {}

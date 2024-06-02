@@ -10,8 +10,6 @@ import java.util.Optional;
 public interface DiseaseWikiRepository extends JpaRepository<DiseaseWiki, Long> {
     boolean existsByDiseaseInfoId(Long diseaseInfoId);
 
-    Optional<DiseaseWiki> findByDiseaseInfoId(Long diseaseInfoId);
-
     @Lock(LockModeType.OPTIMISTIC)
     Optional<DiseaseWiki> findById(Long id);
 }
