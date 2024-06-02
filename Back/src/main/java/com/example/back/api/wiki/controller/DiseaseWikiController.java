@@ -7,6 +7,7 @@ import com.example.back.api.wiki.service.DiseaseWikiService;
 import com.example.back.common.response.JsonResult;
 import com.example.back.domain.auth.disease.DiseaseMember;
 import com.example.back.domain.auth.member.Member;
+import com.example.back.domain.wiki.repository.DiseaseWikiRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class DiseaseWikiController {
     private final DiseaseWikiService diseaseWikiService;
     private final DiseaseMemberService diseaseMemberService;
+    private final DiseaseWikiRepository diseaseWikiRepository;
 
     // 위키 백과 리스트 조회
     @GetMapping
@@ -47,7 +49,7 @@ public class DiseaseWikiController {
 
     // 위키 백과 수정
     @PatchMapping
-    public JsonResult<?> findWiki(@AuthenticationPrincipal Member member,
+    public JsonResult<?> patchWiki(@AuthenticationPrincipal Member member,
                                   @Valid @RequestBody DiseaseWikiPatchRequest request) {
         // 해당 위키를 수정할 수 있는 사용자인지 권한 검증
         DiseaseMember diseaseMember = diseaseMemberService.isSpecificDiseaseMember(member, request.DiseaseWikiId());

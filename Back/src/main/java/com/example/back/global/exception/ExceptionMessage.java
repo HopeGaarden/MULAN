@@ -63,6 +63,7 @@ public enum ExceptionMessage {
     CHAT_NOT_FOUND("채팅방 정보를 찾을 수 없습니다."),
     CHAT_ALREADY_EXIST("이미 채팅방이 존재합니다."),
 
-    ;
+    VERSION_MISMATCH("버전 정보가 일치하지 않습니다. 충돌 수정 api 호출이 필요합니다.");
+
     private final String text;
 }

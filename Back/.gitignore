@@ -22,6 +22,7 @@ bin/
 .DS_Store
 
 ### IntelliJ IDEA ###
+Dockerfile
 *.yml
 .idea
 *.iws

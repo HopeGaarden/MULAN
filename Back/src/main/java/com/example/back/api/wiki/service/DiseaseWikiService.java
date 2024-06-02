@@ -56,7 +56,6 @@ public class DiseaseWikiService {
             log.error("[BR ERROR] {} : {}", diseaseInfo.getId(), ExceptionMessage.WIKI_ALREADY_EXIST.getText());
             throw new DiseaseWikiException(ExceptionMessage.WIKI_ALREADY_EXIST);
         }
-        ;
 
         // 해당 그룹의 질병 정보를 포함해 위키 생성
         diseaseWikiRepository.save(DiseaseWiki.builder()
@@ -73,6 +72,21 @@ public class DiseaseWikiService {
             log.error("[BR ERROR] {} : {}", request.DiseaseWikiId(), ExceptionMessage.WIKI_NOT_FOUND.getText());
             throw new DiseaseWikiException(ExceptionMessage.WIKI_NOT_FOUND);
         });
+
+        // 버전 정보 확인
+        if (wiki.getVersion() != request.version()) {
+            log.error("[BR ERROR] Version mismatch: {}", ExceptionMessage.VERSION_MISMATCH.getText());
+            throw new DiseaseWikiException(ExceptionMessage.VERSION_MISMATCH);
+        }
+
+        // 특정 조건에 따라 지연을 추가
+        if (request.content().contains("conflict_test")) {
+            try {
+                Thread.sleep(3000); // 인위적인 지연
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
         wiki.updateWiki(diseaseMember.getMember().getId(), request.content());
     }

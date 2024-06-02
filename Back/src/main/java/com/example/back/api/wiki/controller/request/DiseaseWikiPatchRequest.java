@@ -8,7 +8,8 @@ import lombok.Builder;
 public record DiseaseWikiPatchRequest(
         Long DiseaseWikiId,
         @NotBlank(message = "질병 백과의 내용은 공백일 수 없습니다.")
-        String content
+        String content,
+        int version
 ){
 
 }
